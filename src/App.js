@@ -3,7 +3,7 @@ import Home from "./Components/Home";
 import Converter from "./Components/Converter";
 import History from "./Components/History";
 import NavOptions from "./Components/NavOptions";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import CountryKeysContextProvider from "./Context/CountryKeysContext";
 import FetchContextProvider from "./Context/FetchContext";
 
