@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = (props) => {
-  const { data, setData, GetDataWithBase } = useContext(FetchContext);
+  const { setData, GetDataWithBase } = useContext(FetchContext);
   const [plotData, setPlotData] = useState([]);
   // let windWidth = window.innerWidth;
   // let windHeight = (window.innerHeight - 120); // removing the height taken by navbar, padding etc
@@ -46,11 +46,9 @@ const Home = (props) => {
         let maxValue = dataArray[0][1];
         let minValue = dataArray[0][1];
         let minKey = dataArray[0][0];
-        let maxKey = dataArray[0][0];
         dataArray.forEach(([key, value]) => {
           if (value > maxValue) {
             maxValue = value;
-            maxKey = key;
           } else if (minValue > value) {
             minValue = value;
             minKey = key;
