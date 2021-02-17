@@ -341,20 +341,20 @@ const CryptoCurrency = (props) => {
                         <span>{row.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell align="right">{"₹" + row.price}</TableCell>
+                    <TableCell align="right">{"₹" + row.price.toLocaleString()}</TableCell>
                     <TableCell align="right">
                       {row.marketChange24h > 0 ? (
                         <Typography className={classes.incresePercentage}>
-                          {row.marketChange24h}%
+                          {row.marketChange24h.toFixed(3)}%
                         </Typography>
                       ) : (
                         <Typography color="error">
-                          {row.marketChange24h}%
+                          {row.marketChange24h.toFixed(3)}%
                         </Typography>
                       )}
                     </TableCell>
-                    <TableCell align="right">{"₹" + row.totalVolume}</TableCell>
-                    <TableCell align="right">{"₹" + row.marketCap}</TableCell>
+                    <TableCell align="right">{"₹" + row.totalVolume.toLocaleString()}</TableCell>
+                    <TableCell align="right">{"₹" + row.marketCap.toLocaleString()}</TableCell>
                     <TableCell
                       padding="none"
                       size="small"

@@ -156,7 +156,7 @@ function App(props) {
               <FetchContextProvider>
                 <CountryKeysContextProvider>
                   <Switch>
-                    <Route exact path="/">
+                    <Route exact path="">
                       <Home setPath={setCurrentPath} />
                     </Route>
                     <Route path="/converter">
