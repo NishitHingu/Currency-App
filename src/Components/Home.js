@@ -56,8 +56,8 @@ const Home = (props) => {
             minKey = key;
           }
         });
-        console.log(maxValue, minValue);
-        console.log(maxKey + " , " + minKey);
+        // console.log(maxValue, minValue);
+        // console.log(maxKey + " , " + minKey);
         result = await GetDataWithBase(minKey);
         dataArray = Object.entries(result);
         setPlotData(getPlotData(dataArray));
@@ -78,7 +78,7 @@ const Home = (props) => {
       plot.push({ name: key, value: 1 / value });
     });
     plot = plot.sort(compare).slice(0);
-    console.log(plot);
+    // console.log(plot);
     return plot;
   }
 

@@ -82,7 +82,6 @@ function App(props) {
   const [darkMode, setDarkMode] = useState(false);
   const toggleTheme = () => {
     setDarkMode(!darkMode);
-    console.log(darkMode);
   };
   // Theme functions
   const themenew = createMuiTheme({
@@ -156,7 +155,7 @@ function App(props) {
               <FetchContextProvider>
                 <CountryKeysContextProvider>
                   <Switch>
-                    <Route exact path="">
+                    <Route exact path="/">
                       <Home setPath={setCurrentPath} />
                     </Route>
                     <Route path="/converter">

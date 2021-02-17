@@ -167,12 +167,6 @@ const Converter = (props) => {
 
   useEffect(() => {
     const startDate = getDate(1);
-    console.log(
-      converterData.firstCountry,
-      converterData.secondCountry,
-      startDate,
-      converterData.endDate
-    );
     const fetchData = async () => {
       let result = await GetHistoryData(
         converterData.firstCountry,
@@ -191,9 +185,7 @@ const Converter = (props) => {
           });
         });
         newPlotData.sort(compare); // Some data is jummbled that's why this sort
-        console.log(newPlotData.length);
         let convRate = newPlotData[newPlotData.length - 1].value;
-        console.log(newPlotData);
         dispatchConverterData({
           type: "SETPLOTDATA&CONVERTIONRATE",
           payload: {

@@ -228,13 +228,11 @@ const CryptoCurrency = (props) => {
 
   const classes = useStyles();
   const theme = useTheme();
-  console.log(theme);
 
   useEffect(() => {
     props.setPath("CryptoCurrency");
     async function fetchData() {
       let result = await GetCryptoCurrencyData();
-      console.log(result);
       let displayData = result.map((result) =>
         createData(
           result.market_cap_rank,
@@ -248,7 +246,6 @@ const CryptoCurrency = (props) => {
           result.sparkline_in_7d.price
         )
       );
-      console.log(displayData);
       dispatchCryptoCurrencyData({
         type: "SETDATA",
         payload: {
@@ -276,7 +273,6 @@ const CryptoCurrency = (props) => {
   // Pagination Functions
 
   const handleChangePage = (event, newPage) => {
-    console.log(newPage);
     dispatchPaginationData({
       type: "SETPAGE",
       payload: {
@@ -286,7 +282,6 @@ const CryptoCurrency = (props) => {
   };
 
   const handleChangeRowsPerPage = (event) => {
-    console.log(event.target.value);
     dispatchPaginationData({
       type: "SETROWSPERPAGE",
       payload: {
@@ -295,7 +290,6 @@ const CryptoCurrency = (props) => {
     });
   };
 
-  console.log(cryptoCurrencyData, paginationData);
 
   return (
     <div className={classes.root}>
