@@ -338,7 +338,7 @@ const Converter = (props) => {
       <Grid item container style={{marginTop: 5}}>
         <Grid item xs={false} sm={1}></Grid>
         <Grid className={classes.cover} item xs={12} sm={10}>
-          <Paper className={classes.paper} elevation={5}>
+          <Paper className={classes.paper} elevation={4}>
             <ResponsiveContainer width={"100%"} height={"100%"}>
               <AreaChart data={converterData.plotData}>
                 <defs>

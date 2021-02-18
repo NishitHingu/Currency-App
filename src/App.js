@@ -3,7 +3,7 @@ import Home from "./Components/Home";
 import Converter from "./Components/Converter";
 import History from "./Components/History";
 import NavOptions from "./Components/NavOptions";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import CountryKeysContextProvider from "./Context/CountryKeysContext";
 import FetchContextProvider from "./Context/FetchContext";
 
@@ -18,13 +18,12 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
-import Brightness7Icon from '@material-ui/icons/Brightness7';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
+import Brightness7Icon from "@material-ui/icons/Brightness7";
+import Brightness4Icon from "@material-ui/icons/Brightness4";
 import {
   CssBaseline,
   Drawer,
   Hidden,
-  Paper,
   useTheme,
 } from "@material-ui/core";
 import CryptoCurrency from "./Components/CryptoCurrency";
@@ -56,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
   drawerPaper: {
-    backgroundColor: theme.palette.primary.type,
     width: drawerWidth,
   },
   content: {
@@ -69,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "scroll",
     padding: theme.spacing(3),
     maxWidth: "100vw",
-    height: "92vh",
+    height: "90vh",
   },
 }));
 
@@ -86,7 +84,7 @@ function App(props) {
   // Theme functions
   const themenew = createMuiTheme({
     palette: {
-      type: darkMode ? 'dark' : 'light',
+      type: darkMode ? "dark" : "light",
     },
   });
 
@@ -99,9 +97,9 @@ function App(props) {
 
   return (
     <ThemeProvider theme={themenew}>
-    <Paper className={classes.root} elevation={0}>
-        <CssBaseline />
-        <Router>
+      <Router basename="/Currency-App">
+        <div className={classes.root}>
+          <CssBaseline />
           <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>
               <IconButton
@@ -116,10 +114,16 @@ function App(props) {
               <Typography variant="h6" className={classes.title}>
                 {currentPath}
               </Typography>
-              <Button onClick={toggleTheme} color="inherit">{darkMode ? <Brightness4Icon/> : <Brightness7Icon/>}</Button>
+              <Button onClick={toggleTheme} color="inherit">
+                {darkMode ? <Brightness4Icon /> : <Brightness7Icon />}
+              </Button>
             </Toolbar>
           </AppBar>
-          <nav style={{backgroundColor: '#555'}} className={classes.drawer} aria-label="Navigation Options">
+          <nav
+            style={{ backgroundColor: "#555" }}
+            className={classes.drawer}
+            aria-label="Navigation Options"
+          >
             <Hidden mdUp>
               <Drawer
                 container={container}
@@ -134,7 +138,7 @@ function App(props) {
                   keepMounted: true, // Better open performance on mobile.
                 }}
               >
-                <NavOptions/>
+                <NavOptions />
               </Drawer>
             </Hidden>
             <Hidden smDown>
@@ -144,8 +148,8 @@ function App(props) {
                 }}
                 variant="permanent"
                 open
-              >               
-                <NavOptions/>
+              >
+                <NavOptions />
               </Drawer>
             </Hidden>
           </nav>
@@ -161,6 +165,9 @@ function App(props) {
                     <Route path="/converter">
                       <Converter setPath={setCurrentPath} />
                     </Route>
+                    <Route path="/history/:id">
+                      <History setPath={setCurrentPath} />
+                    </Route>
                     <Route path="/history">
                       <History setPath={setCurrentPath} />
                     </Route>
@@ -172,8 +179,8 @@ function App(props) {
               </FetchContextProvider>
             </div>
           </main>
-        </Router>
-      </Paper>
+        </div>
+      </Router>
     </ThemeProvider>
   );
 }

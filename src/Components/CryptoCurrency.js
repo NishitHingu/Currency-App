@@ -293,7 +293,7 @@ const CryptoCurrency = (props) => {
 
   return (
     <div className={classes.root}>
-    <Paper className={classes.paper}>
+    <Paper style={{position: 'relative'}} className={classes.paper} elevation={4}>
       <TableContainer style={{ height: "90%" }}>
         <Table stickyHeader className={classes.table}>
           <EnhancedTableHead
@@ -304,7 +304,7 @@ const CryptoCurrency = (props) => {
             headCell={headCells}
           ></EnhancedTableHead>
           {cryptoCurrencyData.loading ? (
-            <Loader/>
+              <Loader/> 
           ) : ( 
             <TableBody>
             {stableSort(
@@ -335,20 +335,20 @@ const CryptoCurrency = (props) => {
                         <span>{row.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell align="right">{"₹" + row.price.toLocaleString()}</TableCell>
+                    <TableCell align="right">{"€" + (typeof(row.price) === 'number' ? row.price.toLocaleString() : row.price)}</TableCell>
                     <TableCell align="right">
                       {row.marketChange24h > 0 ? (
                         <Typography className={classes.incresePercentage}>
-                          {row.marketChange24h.toFixed(3)}%
+                          {typeof(row.marketChange24h) === 'number' ? row.marketChange24h.toFixed(3) : row.marketChange24h}%
                         </Typography>
                       ) : (
                         <Typography color="error">
-                          {row.marketChange24h.toFixed(3)}%
+                          {typeof(row.marketChange24h) === 'number' ? row.marketChange24h.toFixed(3) : row.marketChange24h}%
                         </Typography>
                       )}
                     </TableCell>
-                    <TableCell align="right">{"₹" + row.totalVolume.toLocaleString()}</TableCell>
-                    <TableCell align="right">{"₹" + row.marketCap.toLocaleString()}</TableCell>
+                    <TableCell align="right">{"€" + (typeof(row.totalVolume) === 'number' ? row.totalVolume.toLocaleString() : row.totalVolume)}</TableCell>
+                    <TableCell align="right">{"€" + (typeof(row.marketCap) === 'number' ? row.marketCap.toLocaleString() : row.marketCap)}</TableCell>
                     <TableCell
                       padding="none"
                       size="small"

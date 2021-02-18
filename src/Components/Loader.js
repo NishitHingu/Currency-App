@@ -31,7 +31,7 @@ const Loader = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
     return (
-        <div style={{ width: '100%', height: "100%" }} ref={loader}>
+        <div style={{ width: '100%', height: "100%"}} ref={loader}>
         </div>
     );
 }

@@ -4,6 +4,77 @@ import axios from "axios";
 export const FetchContext = createContext();
 
 const FetchContextProvider = (props) => {
+  const countryTable = {
+    AUD: 'Australia',
+    BGN: 'Bulgaria',
+    BRL: 'Brazil',
+    CAD: 'Canada',
+    CHF: 'Switzerland',
+    CNY: 'China',
+    CZK: 'Czech Republic',
+    DKK: 'Denmark',
+    EUR: 'Euro', 
+    GBP: 'United Kingdom',
+    HKD: 'Hong Kong',
+    HRK: 'Croatia',
+    HUF: 'Hungaria',
+    IDR: 'Indonesia',
+    ILS: 'Israeli Shekel',
+    INR: 'India',
+    ISK: 'Iceland',
+    JPY: 'Japan',
+    KRW: 'South Korea',
+    MXN: 'Mexico',
+    MYR: 'Malaysia',
+    NOK: 'Norway', 
+    NZD: 'New Zealand',
+    PHP: 'Philippines',
+    PLN: 'Poland',
+    RON: 'Romania',
+    RUB: 'Russia',
+    SEK: 'Sweden', 
+    SGD: 'Singapore',
+    THB: 'Thailand',
+    TRY: 'Turkey',
+    USD: 'United States',
+    ZAR: 'South Africa',
+  };
+  // const countryTable =[
+  //   { AUD: 'Australia' },
+  //   { BGN: 'Bulgaria' },
+  //   { BRL: 'Brazil' },
+  //   { CAD: 'Canada' },
+  //   { CHF: 'Switzerland' },
+  //   { CNY: 'China' },
+  //   { CZK: 'Czech Republic' },
+  //   { DKK: 'Denmark' },
+  //   { EUR: 'Euro' }, 
+  //   { GBP: 'United Kingdom' },
+  //   { HKD: 'Hong Kong' },
+  //   { HRK: 'Croatia' },
+  //   { HUF: 'Hungaria' },
+  //   { IDR: 'Indonesia' },
+  //   { ILS: 'Israeli Shekel' },
+  //   { INR: 'India' },
+  //   { ISK: 'Iceland' },
+  //   { JPY: 'Japan' },
+  //   { KRW: 'South Korea' },
+  //   { MXN: 'Mexico' },
+  //   { MYR: 'Malaysia' },
+  //   { NOK: 'Norway' }, 
+  //   { NZD: 'New Zealand' },
+  //   { PHP: 'Philippines' },
+  //   { PLN: 'Poland' },
+  //   { RON: 'Romania' },
+  //   { RUB: 'Russia' },
+  //   { SEK: 'Sweden' }, 
+  //   { SGD: 'Singapore' },
+  //   { THB: 'Thailand' },
+  //   { TRY: 'TUrkey' },
+  //   { USD: 'United States' },
+  //   { ZAR: 'South Africa' },
+  // ];
+
   const [data, setData] = useState();
   async function GetDataWithBase(base) {
     let result = await axios
@@ -36,7 +107,7 @@ const FetchContextProvider = (props) => {
   async function GetCryptoCurrencyData(base) {
     let result = await axios
       .get(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${base ? base : "INR"}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=2C24h%2C7d`
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${base ? base : "EUR"}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=2C24h%2C7d`
       )
       .then((result) => {
         return result.data;
@@ -51,6 +122,7 @@ const FetchContextProvider = (props) => {
     <FetchContext.Provider
       value={{
         data,
+        countryTable,
         setData,
         GetDataWithBase,
         GetHistoryData,

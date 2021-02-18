@@ -28,6 +28,7 @@ import {
 } from "recharts";
 import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
 import Loader from "./Loader";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   options: {
@@ -82,6 +83,8 @@ const History = (props) => {
   const { keys: keysInitialise, isKeySet, FetchKeys } = useContext(
     CountryKeysContext
   );
+  const { id } = useParams();
+  console.log(id);
   const { GetHistoryData } = useContext(FetchContext);
   const [plotCountries, setPlotCountries] = useState([]);
   const [keys, setKeys] = useState(["EUR", "INR"]);
@@ -105,7 +108,7 @@ const History = (props) => {
     if (isKeySet && keysInitialise.length !== keys.length) {
       setKeys(keysInitialise);
       setFirstRender(false);
-      setPlotCountries([...plotCountries, "INR"]);
+      setPlotCountries([...plotCountries, id ? id : 'INR']);
     } else if (!isKeySet) {
       async function getKeys() {
         let result = await FetchKeys();
@@ -113,7 +116,7 @@ const History = (props) => {
       }
       getKeys();
       setFirstRender(false);
-      setPlotCountries([...plotCountries, "INR"]);
+      setPlotCountries([...plotCountries, id ? id : 'INR']);
       console.log(plotCountries);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -421,7 +424,7 @@ const History = (props) => {
                 <Paper
                   style={{ position: "relative" }}
                   className={classes.paper}
-                  elevation={5}
+                  elevation={4}
                 >
                   <Grid container>
                     <Grid item xs={1}></Grid>

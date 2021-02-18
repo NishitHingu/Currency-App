@@ -1,13 +1,13 @@
 # Currency App
 
 ### Libraries
-* React(https://reactjs.org/)
-* Material UI(https://material-ui.com/)
-* Recharts(https://recharts.org/en-US/)
+* [React](https://reactjs.org/)
+* [Material UI](https://material-ui.com/)
+* [Recharts](https://recharts.org/en-US/)
 
 ### API's
-* Exchange Rates Api(https://github.com/exchangeratesapi/exchangeratesapi)
-* CoinGecko(https://www.coingecko.com/en/api)
+* [Exchange Rates Api](https://github.com/exchangeratesapi/exchangeratesapi)
+* [CoinGecko](https://www.coingecko.com/en/api)
 
 ### Description
 
