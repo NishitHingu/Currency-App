@@ -113,8 +113,50 @@ const FetchContextProvider = (props) => {
         return result.data;
       })
       .catch((error) => {
-        console.log(error);
+        return Promise.reject(error);
       });
+    return result;
+  }
+
+  async function FetchCryptoData(id) {
+    let result = await axios
+    .get(
+      `https://api.coingecko.com/api/v3/coins/${id ? id : 'bitcoin'}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=false&sparkline=false`
+    )
+    .then(result => {
+      return result.data;
+    })
+    .catch(error => {
+      console.log(error);
+    })
+    return result;
+  }
+  
+  async function CryptoCurrencyCountries() {
+    let result = await axios
+    .get(
+      "https://api.coingecko.com/api/v3/simple/supported_vs_currencies"
+    )
+    .then(result => {
+      return result.data;
+    })
+    .catch(error => {
+      console.log(error);
+    })
+    return result;
+  }
+
+  async function CryptoHistoryFetch(base, id) {
+    let result = await axios
+    .get(
+      `https://api.coingecko.com/api/v3/coins/${id ? id : 'bitcoin'}/market_chart?vs_currency=${base ? base : 'eur'}&days=356&interval=daily`
+    )
+    .then(result => {
+      return result.data;
+    })
+    .catch(error => {
+      console.log(error);
+    })
     return result;
   }
 
@@ -127,6 +169,9 @@ const FetchContextProvider = (props) => {
         GetDataWithBase,
         GetHistoryData,
         GetCryptoCurrencyData,
+        FetchCryptoData,
+        CryptoCurrencyCountries,
+        CryptoHistoryFetch,
       }}
     >
       {props.children}

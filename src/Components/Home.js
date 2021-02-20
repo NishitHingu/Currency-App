@@ -119,7 +119,11 @@ const Home = (props) => {
     <div className={classes.root}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Typography variant="h3" align='center'>Ranking</Typography>
+          <Typography variant="h3" align='center'>Currency Ranking</Typography>
+          <Typography variant="body1" style={{marginTop: '1rem',}}>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi itaque dignissimos molestias doloribus veritatis repellat omnis illo aspernatur beatae ipsam distinctio, molestiae deleniti aperiam quo similique illum doloremque voluptates quaerat.
+    Quas exercitationem itaque iusto minus. Autem ea suscipit beatae, magnam accusantium in necessitatibus odit. Illum explicabo amet tenetur consectetur unde, quam ex reprehenderit suscipit earum corporis asperiores numquam, consequatur magnam!
+          </Typography>
         </Grid>
         <Grid item xs={1} sm={false}></Grid>
         <Grid item xs={12} sm={10} className={classes.cover}>
@@ -140,25 +144,25 @@ const Home = (props) => {
                   dataKey="value"
                   stroke={theme.palette.success[theme.palette.type]}
                   strokeWidth={3}
-                  name={`Convsion rate with base country: ${countryTable[base]}`}
+                  name={`Conversion rate with base country as ${countryTable[base]}`}
                   animationDuration={1000}
                 />
               </LineChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </Grid>        
+        <Grid item xs={1} sm={false}></Grid>
         <Grid item xs={12}>
           <Typography variant="h5" style={{ marginBottom: '-1rem', marginTop: '0.5rem'}}>
             Ploted Countries
           </Typography>
         </Grid>
-        <Grid item xs={1} sm={false}></Grid>
         <Grid container spacing={1} style={{ margin: ' 0 1rem',}}>
           {keys.map((element) => {
             return (
-              <Grid item xs={6} sm={4} md={3} style={{ cursor: 'default'}} >
+              <Grid key={element} item xs={6} sm={4} md={3} style={{ cursor: 'default'}} >
                 <Button
-                style={{textTransform: 'none'}}
+                  style={{textTransform: 'none'}}
                   component={Link}
                   to={`/history/${element}`}
                 >

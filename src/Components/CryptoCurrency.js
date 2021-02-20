@@ -8,13 +8,15 @@ import {
   TableRow,
   TableCell,
   Typography,
-  useTheme
+  useTheme,
+  Box,
 } from "@material-ui/core";
 import React, { useContext, useEffect, useReducer } from "react";
+import { Link } from "react-router-dom";
 import { Line, LineChart, YAxis } from "recharts";
 import { FetchContext } from "../Context/FetchContext";
 import EnhancedTableHead from "./EnhancedTableHead";
-import Loader from './Loader';
+import Loader from "./Loader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
   logoWrapper: {
     display: "flex",
     alignItems: "center",
+    textDecoration: "none",
+    color: theme.palette.text.primary,
   },
   logo: {
     height: "1.5rem",
@@ -53,8 +57,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// Increase scroll height so user can scroll along X-axis
+const r = document.querySelector(":root");
+r.style.setProperty("--scrollHeight", "5px");
+
 // Formating data function
 function createData(
+  id,
   ranking,
   name,
   price,
@@ -68,6 +77,7 @@ function createData(
   let plotData = plot.map((data) => ({ value: data }));
   plotData = plotData.filter((data, index) => (index % 2 === 0 ? true : false));
   return {
+    id,
     ranking,
     imgSrc,
     name,
@@ -176,12 +186,19 @@ const CryptoCurrency = (props) => {
           ...state,
           cryptoData: action.payload.data,
           loading: false,
+          failedToLoad: false,
         };
       case "UPDATESORTINFO":
         return {
           ...state,
           order: action.payload.order,
           orderBy: action.payload.orderBy,
+          failedToLoad: false,
+        };
+      case "FAILEDTOLOAD":
+        return {
+          ...state,
+          failedToLoad: true,
         };
       default:
         return {
@@ -222,38 +239,52 @@ const CryptoCurrency = (props) => {
       order: "desc",
       orderBy: "marketCap",
       loading: true,
+      failedToLoad: false,
     }
   );
   const { GetCryptoCurrencyData } = useContext(FetchContext);
-
   const classes = useStyles();
   const theme = useTheme();
 
   useEffect(() => {
     props.setPath("CryptoCurrency");
     async function fetchData() {
-      let result = await GetCryptoCurrencyData();
-      let displayData = result.map((result) =>
-        createData(
-          result.market_cap_rank,
-          result.name,
-          result.current_price,
-          result.image,
-          result.price_change_percentage_24h,
-          result.price_change_percentage_7d_in_currency,
-          result.total_volume,
-          result.market_cap,
-          result.sparkline_in_7d.price
-        )
-      );
-      dispatchCryptoCurrencyData({
-        type: "SETDATA",
-        payload: {
-          data: displayData,
-        },
+      let failed = false;
+      let result = await GetCryptoCurrencyData().catch((error) => {
+        dispatchCryptoCurrencyData({
+          type: "FAILEDTOLOAD",
+        });
+        failed = true;
       });
+      if (!failed) {
+        let displayData = result.map((result) =>
+          createData(
+            result.id,
+            result.market_cap_rank,
+            result.name,
+            result.current_price,
+            result.image,
+            result.price_change_percentage_24h,
+            result.price_change_percentage_7d_in_currency,
+            result.total_volume,
+            result.market_cap,
+            result.sparkline_in_7d.price
+          )
+        );
+        dispatchCryptoCurrencyData({
+          type: "SETDATA",
+          payload: {
+            data: displayData,
+          },
+        });
+      }
     }
     fetchData();
+
+    return function cleanUpScroll() {
+      const r = document.querySelector(":root");
+      r.style.setProperty("--scrollHeight", "0");
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -290,119 +321,192 @@ const CryptoCurrency = (props) => {
     });
   };
 
-
   return (
     <div className={classes.root}>
-    <Paper style={{position: 'relative'}} className={classes.paper} elevation={4}>
-      <TableContainer style={{ height: "90%" }}>
-        <Table stickyHeader className={classes.table}>
-          <EnhancedTableHead
-            classes={classes}
-            order={cryptoCurrencyData.order}
-            orderBy={cryptoCurrencyData.orderBy}
-            onRequestSort={handleRequestSort}
-            headCell={headCells}
-          ></EnhancedTableHead>
-          {cryptoCurrencyData.loading ? (
-              <Loader/> 
-          ) : ( 
-            <TableBody>
-            {stableSort(
-              cryptoCurrencyData.cryptoData,
-              getComparator(
-                cryptoCurrencyData.order,
-                cryptoCurrencyData.orderBy
-              )
-            )
-              .slice(
-                paginationData.page * paginationData.rowsPerPage,
-                paginationData.page * paginationData.rowsPerPage +
-                  paginationData.rowsPerPage
-              )
-              .map((row, index) => {
-                return (
-                  <TableRow key={row.name}>
-                    <TableCell component="th" id={row.ranking} scope="row">
-                      {row.ranking}
-                    </TableCell>
-                    <TableCell padding="none" align="left">
-                      <div className={classes.logoWrapper}>
-                        <img
-                          src={row.imgSrc}
-                          className={classes.logo}
-                          alt="logo"
-                        ></img>
-                        <span>{row.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell align="right">{"€" + (typeof(row.price) === 'number' ? row.price.toLocaleString() : row.price)}</TableCell>
-                    <TableCell align="right">
-                      {row.marketChange24h > 0 ? (
-                        <Typography className={classes.incresePercentage}>
-                          {typeof(row.marketChange24h) === 'number' ? row.marketChange24h.toFixed(3) : row.marketChange24h}%
-                        </Typography>
-                      ) : (
-                        <Typography color="error">
-                          {typeof(row.marketChange24h) === 'number' ? row.marketChange24h.toFixed(3) : row.marketChange24h}%
-                        </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell align="right">{"€" + (typeof(row.totalVolume) === 'number' ? row.totalVolume.toLocaleString() : row.totalVolume)}</TableCell>
-                    <TableCell align="right">{"€" + (typeof(row.marketCap) === 'number' ? row.marketCap.toLocaleString() : row.marketCap)}</TableCell>
-                    <TableCell
-                      padding="none"
-                      size="small"
-                      style={{
-                        height: "60px",
-                      }}
-                    >
-                      <div
-                        style={{ display: "flex", justifyContent: "center" }}
-                      >
-                        <LineChart width={100} height={57} data={row.plotData}>
-                          <YAxis hide={true} domain={["dataMin", "dataMax"]} />
-                          {row.marketChange7d > 0 ? (
-                            <Line
-                              animationDuration={500}
-                              dot={false}
-                              connectNulls={true}
-                              type="monotone"
-                              dataKey="value"
-                              stroke="green"
-                              strokeWidth={2}
-                            />
-                          ) : (
-                            <Line
-                              animationDuration={500}
-                              dot={false}
-                              connectNulls={true}
-                              type="monotone"
-                              dataKey="value"
-                              stroke={theme.palette.error[theme.palette.type]}
-                              strokeWidth={2}
-                            />
-                          )}
-                        </LineChart>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        )}
-         </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 15]}
-        component="div"
-        count={cryptoCurrencyData.cryptoData.length}
-        rowsPerPage={paginationData.rowsPerPage}
-        page={paginationData.page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+      <Paper
+        style={{ position: "relative" }}
+        className={classes.paper}
+        elevation={4}
       >
-      </TablePagination>
-    </Paper>
+        <TableContainer style={{ height: "90%" }}>
+          <Table stickyHeader className={classes.table}>
+            <EnhancedTableHead
+              classes={classes}
+              order={cryptoCurrencyData.order}
+              orderBy={cryptoCurrencyData.orderBy}
+              onRequestSort={handleRequestSort}
+              headCell={headCells}
+            ></EnhancedTableHead>
+            {cryptoCurrencyData.failedToLoad ? (
+              <TableBody>
+                <TableRow>
+                  <TableCell style={{ border: "none" }}>
+                    {" "}
+                    {/*To remove the unwanted line apperaing at the edge*/}
+                    <span
+                      style={{
+                        position: "absolute",
+                        width: "95%",
+                        top: '40%',  
+                      }}          
+                    >         
+                      <Typography variant="h4" align="center">
+                        Failed To Load Data
+                      </Typography>
+                    </span>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            ) : cryptoCurrencyData.loading ? (
+              <TableBody>
+                <TableRow>
+                  <TableCell style={{ border: "none" }}>
+                    {" "}
+                    {/*To remove the unwanted line apperaing at the edge*/}
+                    <Loader />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            ) : (
+              <TableBody>
+                {stableSort(
+                  cryptoCurrencyData.cryptoData,
+                  getComparator(
+                    cryptoCurrencyData.order,
+                    cryptoCurrencyData.orderBy
+                  )
+                )
+                  .slice(
+                    paginationData.page * paginationData.rowsPerPage,
+                    paginationData.page * paginationData.rowsPerPage +
+                      paginationData.rowsPerPage
+                  )
+                  .map((row, index) => {
+                    return (
+                      <TableRow key={row.name}>
+                        <TableCell component="th" id={row.ranking} scope="row">
+                          {row.ranking}
+                        </TableCell>
+                        <TableCell padding="none" align="left">
+                          <Typography
+                            variant="body2"
+                            component={Link}
+                            to={`/cryptoCurrency/${row.id}`}
+                            className={classes.logoWrapper}
+                          >
+                            <img
+                              src={row.imgSrc}
+                              className={classes.logo}
+                              alt="logo"
+                            ></img>
+                            <span>{row.name}</span>
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          {"€" +
+                            (typeof row.price === "number"
+                              ? row.price.toLocaleString()
+                              : row.price)}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.marketChange24h > 0 ? (
+                            <Typography className={classes.incresePercentage}>
+                              {typeof row.marketChange24h === "number"
+                                ? row.marketChange24h.toFixed(3)
+                                : row.marketChange24h}
+                              %
+                            </Typography>
+                          ) : (
+                            <Typography color="error">
+                              {typeof row.marketChange24h === "number"
+                                ? row.marketChange24h.toFixed(3)
+                                : row.marketChange24h}
+                              %
+                            </Typography>
+                          )}
+                        </TableCell>
+                        <TableCell align="right">
+                          {"€" +
+                            (typeof row.totalVolume === "number"
+                              ? row.totalVolume.toLocaleString()
+                              : row.totalVolume)}
+                        </TableCell>
+                        <TableCell align="right">
+                          {"€" +
+                            (typeof row.marketCap === "number"
+                              ? row.marketCap.toLocaleString()
+                              : row.marketCap)}
+                        </TableCell>
+                        <TableCell
+                          padding="none"
+                          size="small"
+                          style={{
+                            height: "60px",
+                          }}
+                        >
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                            component={Link}
+                            to={`/cryptoCurrency/${row.id}`}
+                          >
+                            <LineChart
+                              width={100}
+                              height={57}
+                              data={row.plotData}
+                              style={{
+                                cursor: "pointer",
+                              }}
+                            >
+                              <YAxis
+                                hide={true}
+                                domain={["dataMin", "dataMax"]}
+                              />
+                              {row.marketChange7d > 0 ? (
+                                <Line
+                                  animationDuration={500}
+                                  dot={false}
+                                  connectNulls={true}
+                                  type="monotone"
+                                  dataKey="value"
+                                  stroke="green"
+                                  strokeWidth={2}
+                                />
+                              ) : (
+                                <Line
+                                  animationDuration={500}
+                                  dot={false}
+                                  connectNulls={true}
+                                  type="monotone"
+                                  dataKey="value"
+                                  stroke={
+                                    theme.palette.error[theme.palette.type]
+                                  }
+                                  strokeWidth={2}
+                                />
+                              )}
+                            </LineChart>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            )}
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 15]}
+          component="div"
+          count={cryptoCurrencyData.cryptoData.length}
+          rowsPerPage={paginationData.rowsPerPage}
+          page={paginationData.page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        ></TablePagination>
+      </Paper>
     </div>
   );
 };

@@ -123,8 +123,6 @@ const Converter = (props) => {
   const [converterData, dispatchConverterData] = useReducer(
     converterDataReducer,
     {
-      // Need to set countries with the first and second countries so to solve the warning
-      // from material ui about selected item not in the options
       countries: ["EUR", "INR"],
       firstCountry: "EUR",
       firstValue: 1,

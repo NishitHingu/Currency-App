@@ -27,6 +27,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import CryptoCurrency from "./Components/CryptoCurrency";
+import CryptoCurrencyWithID from "./Components/CryptoCurrencyWithID";
 
 const drawerWidth = 240;
 
@@ -66,8 +67,15 @@ const useStyles = makeStyles((theme) => ({
   container: {
     overflow: "scroll",
     padding: theme.spacing(3),
+    boxSizing: 'border-box',
     maxWidth: "100vw",
-    height: "90vh",
+    height: `calc(100vh - ${theme.mixins.toolbar.height})`,
+    [theme.breakpoints.up("sm")]: {
+      height: `calc(100vh - ${theme.mixins.toolbar["@media (min-width:600px)"].minHeight}px)`,
+    },
+    [theme.breakpoints.down("xs")]: {
+      height: `calc(100vh - ${theme.mixins.toolbar["@media (min-width:0px) and (orientation: landscape)"].minHeight}px)`,
+    }
   },
 }));
 
@@ -171,8 +179,11 @@ function App(props) {
                     <Route path="/history">
                       <History setPath={setCurrentPath} />
                     </Route>
-                    <Route path="/cryptoCurrency">
+                    <Route exact path="/cryptoCurrency">
                       <CryptoCurrency setPath={setCurrentPath} />
+                    </Route>
+                    <Route path="/CryptoCurrency/:id">
+                      <CryptoCurrencyWithID setPath={setCurrentPath} />
                     </Route>
                   </Switch>
                 </CountryKeysContextProvider>

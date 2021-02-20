@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useReducer } from "react";
 import { FetchContext } from "../Context/FetchContext";
 import { CountryKeysContext } from "../Context/CountryKeysContext";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -68,12 +68,10 @@ const getDate = (y, m) => {
   let dd = String(date.getDate()).padStart(2, "0");
   let mm = String(date.getMonth() + 1 - m).padStart(2, "0"); // January is 0!
   let yyyy = date.getFullYear() - y;
-  // Edge cases yet if month is jan -m will not give desired results
+  // Edge cases so if month is jan -m will gives desired results
   if (parseInt(mm) <= 0) {
-    console.log(mm);
     yyyy = String(parseInt(yyyy) - 1);
     mm = String(12 + parseInt(mm));
-    console.log(mm);
   }
 
   return yyyy + "-" + mm + "-" + dd;
@@ -84,40 +82,145 @@ const History = (props) => {
     CountryKeysContext
   );
   const { id } = useParams();
-  console.log(id);
+
+  const timeAndPlotReducer = (state, action) => {
+    switch (action.type) {
+      case "INTIALSETPLOTCOUNTRIES":
+        return {
+          ...state,
+          keys: action.payload.keys,
+          plotCountries: action.payload.countries,
+          firstRender: false,
+        };
+      case "SETPLOTDATA":
+        return {
+          ...state,
+          plotData: action.payload.data,
+          loading: false,
+          failedToLoadData: false,
+          fetchingData: false,
+        };
+      case "SETSTARTDATE":
+        return {
+          ...state,
+          startDate: action.payload.newDate,
+          dataTime: action.payload.newValue,
+          fetchingData: true,
+        };
+      case "SETPLOTCOUNTRIES":
+        return {
+          ...state,
+          plotCountries: action.payload.data,
+          loading: true,
+        };
+      case "SETBASE":
+        return {
+          ...state,
+          base: action.payload.base,
+          fetchingData: true,
+        };
+      case "REMOVEDCOUNTRY":
+        return {
+          ...state,
+          plotCountries: action.payload.countries,
+        };
+      case "SET2":
+        return {
+          ...state,
+        };
+      case "FAILEDTOLOAD":
+        return {
+          ...state,
+          failedToLoadData: true,
+          fetchingData: false,
+        };
+      default:
+        return { ...state };
+    }
+  };
+
+  const dialogBoxReducer = (state, action) => {
+    switch (action.type) {
+      case "COUNTRYOPEN":
+        return {
+          ...state,
+          countryOpen: true,
+        };
+      case "BASEOPEN":
+        return {
+          ...state,
+          baseOpen: true,
+        };
+      case "COUNTRYCLOSE":
+        return {
+          ...state,
+          countryOpen: false,
+          dialogBoxInput: "",
+        };
+      case "BASECLOSE":
+        return {
+          ...state,
+          baseOpen: false,
+          dialogBoxInput: "",
+        };
+      case "EMPTYBOX":
+        return {
+          ...state,
+          dialogBoxInput: "",
+        };
+      case "SETDIALOGBOX":
+        return {
+          ...state,
+          dialogBoxInput: action.payload,
+        };
+      default:
+        break;
+    }
+  };
+
   const { GetHistoryData } = useContext(FetchContext);
-  const [plotCountries, setPlotCountries] = useState([]);
-  const [keys, setKeys] = useState(["EUR", "INR"]);
-  const [dataTime, setDataTime] = useState("1M");
-  const [startDate, setStartDate] = useState(getDate(0, 1));
+  const [plotAndTime, dispatchPlotAndTime] = useReducer(timeAndPlotReducer, {
+    plotCountries: [],
+    plotData: [],
+    base: "EUR",
+    keys: ["EUR", "INR"],
+    dataTime: "1M",
+    startDate: getDate(0, 1),
+    endDate: getDate(0, 0),
+    firstRender: true,
+    fetchingData: true,
+    loading: true,
+  });
   // eslint-disable-next-line no-unused-vars
-  const [endDate, setEndDate] = useState(getDate(0, 0));
-  const [base, setBase] = useState("EUR");
-  const [firstRender, setFirstRender] = useState(true);
-  const [plotData, setPlotData] = useState([]);
-  const [countryOpen, setCountryOpen] = useState(false);
-  const [baseOpen, setBaseOpen] = useState(false);
-  const [dialogBoxInput, setDialogBoxInput] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [fetchingData, setFetchingData] = useState(true);
-  const [failedToLoadData, setFailedToLoadData] = useState(false);
+  const [dialogBox, dispatchDialogBox] = useReducer(dialogBoxReducer, {
+    countryOpen: false,
+    baseOpen: false,
+    dialogBoxInput: "",
+  });
   const theme = useTheme();
 
   useEffect(() => {
     props.setPath("History");
-    if (isKeySet && keysInitialise.length !== keys.length) {
-      setKeys(keysInitialise);
-      setFirstRender(false);
-      setPlotCountries([...plotCountries, id ? id : 'INR']);
+    if (isKeySet && keysInitialise.length !== plotAndTime.keys.length) {
+      dispatchPlotAndTime({
+        type: "INTIALSETPLOTCOUNTRIES",
+        payload: {
+          keys: keysInitialise,
+          countries: [id ? id : "INR"],
+        },
+      });
     } else if (!isKeySet) {
       async function getKeys() {
         let result = await FetchKeys();
-        setKeys(result);
+        dispatchPlotAndTime({
+          type: "INTIALSETPLOTCOUNTRIES",
+          payload: {
+            keys: result,
+            countries: [id ? id : "INR"],
+          },
+        });
       }
       getKeys();
-      setFirstRender(false);
-      setPlotCountries([...plotCountries, id ? id : 'INR']);
-      console.log(plotCountries);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -127,14 +230,13 @@ const History = (props) => {
   };
 
   useEffect(() => {
-    if (!firstRender) {
-      console.log(base, plotCountries.join(","), startDate, endDate);
+    if (!plotAndTime.firstRender) {
       const fetchData = async () => {
         let result = await GetHistoryData(
-          base,
-          plotCountries.join(","),
-          startDate,
-          endDate
+          plotAndTime.base,
+          plotAndTime.plotCountries.join(","),
+          plotAndTime.startDate,
+          plotAndTime.endDate
         );
         if (typeof result === "object") {
           let newPlotData = [];
@@ -148,102 +250,136 @@ const History = (props) => {
             );
           }
           newPlotData.sort(compare); // Some data is jummbled that's why this sort
-          console.log(newPlotData);
-          setPlotData(newPlotData);
-          setLoading(false);
-          setFailedToLoadData(false);
-          setFetchingData(false);
+          dispatchPlotAndTime({
+            type: "SETPLOTDATA",
+            payload: {
+              data: newPlotData,
+            },
+          });
         } else {
           setTimeout(() => {
-            setFailedToLoadData(true);
-            setFetchingData(false);
+            dispatchPlotAndTime({
+              type: "FAILEDTOLOAD",
+            });
           }, 1000);
         }
       };
       fetchData();
     }
-    console.log(plotCountries);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [base, plotCountries, startDate]);
+  }, [plotAndTime.base, plotAndTime.plotCountries, plotAndTime.startDate]);
 
   const handleChangeTime = (event, newValue) => {
-    setDataTime(newValue);
-    setFetchingData(true);
     let newDate;
     switch (newValue) {
       case "1M":
         newDate = getDate(0, 1);
-        setStartDate(newDate);
         break;
 
       case "1Y":
         newDate = getDate(1, 0);
-        setStartDate(newDate);
         break;
 
       case "5Y":
         newDate = getDate(5, 0);
-        setStartDate(newDate);
         break;
 
       case "MAX":
         newDate = getDate(12, 0);
-        setStartDate(newDate);
         break;
 
       default:
-        console.log(newValue);
         break;
     }
+    dispatchPlotAndTime({
+      type: "SETSTARTDATE",
+      payload: {
+        newDate,
+        newValue,
+      },
+    });
   };
 
   // Dialog box click functions
 
   const handleClickCountryOpenDialogBox = () => {
-    setCountryOpen(true);
+    dispatchDialogBox({
+      type: "COUNTRYOPEN",
+    });
   };
   const handleCloseCountryDialogBox = () => {
-    setCountryOpen(false);
+    dispatchDialogBox({
+      type: "COUNTRYCLOSE",
+    });
   };
   const handleCountryDialogBoxSubmit = () => {
-    if (dialogBoxInput === base || plotCountries.includes(dialogBoxInput)) {
-      alert("Country already ploted or it selected as the Base");
-      setDialogBoxInput("");
+    if (
+      dialogBox.dialogBoxInput === plotAndTime.base ||
+      plotAndTime.plotCountries.includes(dialogBox.dialogBoxInput)
+    ) {
+      alert("Country already ploted or it is selected as the Base");
+      dispatchDialogBox({
+        type: "EMPTYBOX",
+      });
     } else {
-      setPlotCountries([...plotCountries, dialogBoxInput]);
-      setCountryOpen(false);
-      setDialogBoxInput("");
-      setLoading(true);
+      dispatchPlotAndTime({
+        type: "SETPLOTCOUNTRIES",
+        payload: {
+          data: [...plotAndTime.plotCountries, dialogBox.dialogBoxInput],
+        },
+      });
+      dispatchDialogBox({
+        type: "COUNTRYCLOSE",
+      });
     }
   };
 
   const handleDailogBoxInputChange = (e) => {
-    setDialogBoxInput(e.target.value);
+    dispatchDialogBox({
+      type: "SETDIALOGBOX",
+      payload: e.target.value,
+    });
   };
 
   const handleClickBaseOpenDialogBox = () => {
-    setBaseOpen(true);
+    dispatchDialogBox({
+      type: "BASEOPEN",
+    });
   };
   const handleCloseBaseDialogBox = () => {
-    setBaseOpen(false);
+    dispatchDialogBox({
+      type: "BASECLOSE",
+    });
   };
   const handleBaseDialogBoxSubmit = (e) => {
-    if (plotCountries.includes(dialogBoxInput)) {
+    if (plotAndTime.plotCountries.includes(dialogBox.dialogBoxInput)) {
       alert("Base and country cannot be same");
-      setDialogBoxInput("");
+      dispatchDialogBox({
+        type: "EMPTYBOX",
+      });
     } else {
-      setBase(dialogBoxInput);
-      setBaseOpen(false);
-      setFetchingData(true);
-      setDialogBoxInput("");
+      dispatchPlotAndTime({
+        type: "SETBASE",
+        payload: {
+          base: dialogBox.dialogBoxInput,
+        },
+      });
+      dispatchDialogBox({
+        type: "BASECLOSE",
+      });
     }
   };
 
   // Removing a country from the List
   const removeCountry = (country) => {
-    let countries = [...plotCountries];
+    let countries = [...plotAndTime.plotCountries];
     countries = countries.filter((item) => item !== country);
-    setPlotCountries(countries);
+    dispatchPlotAndTime({
+      type: "REMOVEDCOUNTRY",
+      payload: {
+        countries,
+      },
+    });
   };
 
   // Custom tooltip for the Graph
@@ -269,7 +405,7 @@ const History = (props) => {
         <Grid item xs={12} className={classes.options}>
           <Tabs
             className={classes.tabs}
-            value={dataTime}
+            value={plotAndTime.dataTime}
             onChange={handleChangeTime}
             textColor="primary"
             indicatorColor="primary"
@@ -294,16 +430,16 @@ const History = (props) => {
           <Dialog
             disableBackdropClick
             disableEscapeKeyDown
-            open={countryOpen}
+            open={dialogBox.countryOpen}
             onClose={handleClickCountryOpenDialogBox}
           >
             <div className={classes.dialogBox}>
               <DialogTitle>Choose Country</DialogTitle>
               <DialogContent>
                 <CountryOption
-                  value={dialogBoxInput}
+                  value={dialogBox.dialogBoxInput}
                   onChange={handleDailogBoxInputChange}
-                  countryNames={keys}
+                  countryNames={plotAndTime.keys}
                   optionNo={1}
                 />
               </DialogContent>
@@ -337,16 +473,16 @@ const History = (props) => {
           <Dialog
             disableBackdropClick
             disableEscapeKeyDown
-            open={baseOpen}
+            open={dialogBox.baseOpen}
             onClose={handleCloseBaseDialogBox}
           >
             <div className={classes.dialogBox}>
               <DialogTitle>Choose Base</DialogTitle>
               <DialogContent>
                 <CountryOption
-                  value={dialogBoxInput}
+                  value={dialogBox.dialogBoxInput}
                   onChange={handleDailogBoxInputChange}
-                  countryNames={keys}
+                  countryNames={plotAndTime.keys}
                   optionNo={1}
                 />
               </DialogContent>
@@ -379,18 +515,27 @@ const History = (props) => {
         >
           <Typography variant="caption" align="center" component="div">
             <span style={{ marginRight: "0.5rem" }}>
-              {`Data From: ${startDate} `}
+              {`Data From: ${plotAndTime.startDate} `}
             </span>
-            <span style={{ marginLeft: "0.5rem" }}>{` To: ${endDate}`}</span>
+            <span
+              style={{ marginLeft: "0.5rem" }}
+            >{` To: ${plotAndTime.endDate}`}</span>
           </Typography>
           <Typography variant="caption" align="center" component="div">
-            <span style={{ marginRight: "0.5rem" }}>Base Country: {base}</span>
+            <span style={{ marginRight: "0.5rem" }}>
+              Base Country: {plotAndTime.base}
+            </span>
             <span style={{ marginLeft: "0.5rem" }}>
               PlotedCountries:
               <span style={{ marginLeft: "0.25rem" }}>
-                {plotCountries.map((item, index) => (
-                  <Link style={{color: theme.palette.success.info}} href={`#${item}`}>
-                    {index !== plotCountries.length - 1 ? item + "," : item}
+                {plotAndTime.plotCountries.map((item, index) => (
+                  <Link
+                    style={{ color: theme.palette.success.info }}
+                    href={`#${item}`}
+                  >
+                    {index !== plotAndTime.plotCountries.length - 1
+                      ? item + ","
+                      : item}
                   </Link>
                 ))}
               </span>
@@ -398,7 +543,7 @@ const History = (props) => {
           </Typography>
         </Grid>
       </Grid>
-      {failedToLoadData && (
+      {plotAndTime.failedToLoadData && (
         <Grid
           item
           xs={12}
@@ -411,13 +556,13 @@ const History = (props) => {
           </Typography>
         </Grid>
       )}
-      {!failedToLoadData ? (
-        fetchingData ? (
+      {!plotAndTime.failedToLoadData ? (
+        plotAndTime.fetchingData ? (
           <Grid item xs={12} style={{ position: "relative", height: "50vh" }}>
             <Loader />
           </Grid>
         ) : (
-          plotCountries.map((countryName, index) => (
+          plotAndTime.plotCountries.map((countryName, index) => (
             <Grid item id={countryName} container style={{ marginTop: 5 }}>
               <Grid item xs={false} sm={1}></Grid>
               <Grid className={classes.cover} item xs={12} sm={10}>
@@ -442,10 +587,11 @@ const History = (props) => {
                       </IconButton>
                     </Grid>
                   </Grid>
-                  {!loading || plotCountries.length - 1 !== index ? (
+                  {!plotAndTime.loading ||
+                  plotAndTime.plotCountries.length - 1 !== index ? (
                     <ResponsiveContainer width={"100%"} height={"90%"}>
                       <AreaChart
-                        data={plotData}
+                        data={plotAndTime.plotData}
                         margin={{
                           top: 10,
                           right: 30,
