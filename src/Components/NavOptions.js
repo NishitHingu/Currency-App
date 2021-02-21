@@ -29,13 +29,13 @@ const useStyles = makeStyles((theme) => ({
   // }
 }));
 
-function NavOptions() {
+function NavOptions(props) {
   const classes = useStyles();
   return (
     <div className={classes.wrapper}>
       <div className={classes.toolbar}></div>
         <Divider />
-        <List>
+        <List onClick={() => props.onChange()}>
           <LinkItem to="/" primary="Home" icon={<Home />} />
           <LinkItem to="/history" primary="History" icon={<History />} />
           <LinkItem

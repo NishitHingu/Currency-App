@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   seperator: {
-    fontSize: 24, 
+    fontSize: 24,
     paddingLeft: 10,
   },
   inputFeildArea: {
@@ -52,8 +52,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "baseline",
     marginBottom: 15,
-  }
-
+  },
 }));
 
 const Converter = (props) => {
@@ -118,7 +117,7 @@ const Converter = (props) => {
   };
 
   const { setData, GetHistoryData } = useContext(FetchContext);
-  const { keys, isKeySet, FetchKeys } = useContext(CountryKeysContext); 
+  const { keys, isKeySet, FetchKeys } = useContext(CountryKeysContext);
   const theme = useTheme();
   const [converterData, dispatchConverterData] = useReducer(
     converterDataReducer,
@@ -131,7 +130,7 @@ const Converter = (props) => {
       conversionRate: 1,
       endDate: getDate(0),
       plotData: [],
-      changedFirstCountry: true,  
+      changedFirstCountry: true,
     }
   );
 
@@ -142,21 +141,21 @@ const Converter = (props) => {
         type: "SET_COUNTRIES",
         payload: {
           countries: keys,
-        }
+        },
       });
     } else if (!isKeySet) {
       async function getKeys() {
-        let result = await FetchKeys();
-        dispatchConverterData({
-          type: "SET_COUNTRIES",
-          payload: {
-            countries: result,
-          }
-        });
+        let result = await FetchKeys()
+          dispatchConverterData({
+            type: "SET_COUNTRIES",
+            payload: {
+              countries: result,
+            },
+          });
       }
       getKeys();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const compare = (a, b) => {
@@ -247,7 +246,7 @@ const Converter = (props) => {
     if (value < 0) {
       alert("Negative value not allowed");
       return;
-    } 
+    }
     let newValue = converterData.conversionRate * value;
     dispatchConverterData({
       type: "UPDATEVALUES",
@@ -262,7 +261,7 @@ const Converter = (props) => {
     if (value < 0) {
       alert("Negative value not allowed");
       return;
-    } 
+    }
     let newValue = value / converterData.conversionRate;
     dispatchConverterData({
       type: "UPDATEVALUES",
@@ -273,7 +272,7 @@ const Converter = (props) => {
     });
   };
 
-  const CustomToolTip = ({ active, payload, label }) => {
+  const CustomToolTip = ({ active, payload }) => {
     if (active) {
       let name = payload ? payload[0].payload.name : "";
       let value = payload ? payload[0].payload.value : "";
@@ -290,100 +289,113 @@ const Converter = (props) => {
   const classes = useStyles();
 
   return (
-    <Grid container direction="column" spacing={2}>
-      <div className={classes.inputFeildArea}>        
-        <CountryOption
-          value={converterData.firstCountry}
-          onChange={handleChangeOption1}
-          countryNames={converterData.countries}
-          optionNo={1}
-          label={"Base"}
-        />
-        <span className={classes.seperator}> : </span>
-        <CountryOption
-          value={converterData.secondCountry}
-          onChange={handleChangeOption2}
-          countryNames={converterData.countries}
-          optionNo={2}
-          label={"Country"}
-        />
-      </div>
-      <div className={classes.inputFeildArea}>
-        <TextField
-          style={{marginLeft: 10}} // To aline it with the country options
-          id="outlined-number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-          value={converterData.firstValue}
-          onChange={changeInput1}
-        />
-        <span className={classes.seperator}> : </span>
-        <TextField
-          style={{marginLeft: 10}} // To aline it with the country options
-          id="outlined-number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-          value={converterData.secondValue}
-          onChange={changeInput2}
-        />
-      </div>
-      <Grid item container style={{marginTop: 5}}>
-        <Grid item xs={false} sm={1}></Grid>
-        <Grid className={classes.cover} item xs={12} sm={10}>
-          <Paper className={classes.paper} elevation={4}>
-            <ResponsiveContainer width={"100%"} height={"100%"}>
-              <AreaChart data={converterData.plotData}>
-                <defs>
-                  <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.9} />
-                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" stroke={theme.palette.text.secondary} />
-                <YAxis
-                  stroke={theme.palette.text.secondary}
-                  type="number"
-                  domain={[
-                    (dataMin) => {
-                      if (dataMin > 1) {
-                        return Math.floor(dataMin);
-                      } else {
-                        return (dataMin - (2 * dataMin / 10)).toFixed(3);
-                      }
-                    },
-                    (dataMax) => {
-                      if (dataMax > 1) {
-                        return Math.ceil(dataMax);
-                      } else {
-                        return (dataMax + (3 * dataMax / 10)).toFixed(3);
-                      }
-                    }
-                  ]}
-                />
-                <Tooltip content={<CustomToolTip />} />
-                <Legend iconSize={0} />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  name={`Data From: ${getDate(1)} To: ${converterData.endDate}`}
-                  stroke={theme.palette.text.primary}
-                  fillOpacity={1}
-                  fill="url(#colorUv)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Paper>
+        <Grid container direction="column" spacing={2}>
+          <div className={classes.inputFeildArea}>
+            <CountryOption
+              value={converterData.firstCountry}
+              onChange={handleChangeOption1}
+              countryNames={converterData.countries}
+              optionNo={1}
+              label={"Base"}
+            />
+            <span className={classes.seperator}> : </span>
+            <CountryOption
+              value={converterData.secondCountry}
+              onChange={handleChangeOption2}
+              countryNames={converterData.countries}
+              optionNo={2}
+              label={"Country"}
+            />
+          </div>
+          <div className={classes.inputFeildArea}>
+            <TextField
+              style={{ marginLeft: 10 }} // To aline it with the country options
+              id="outlined-number"
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="outlined"
+              value={converterData.firstValue}
+              onChange={changeInput1}
+            />
+            <span className={classes.seperator}> : </span>
+            <TextField
+              style={{ marginLeft: 10 }} // To aline it with the country options
+              id="outlined-number"
+              type="number"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="outlined"
+              value={converterData.secondValue}
+              onChange={changeInput2}
+            />
+          </div>
+          <Grid item container style={{ marginTop: 5 }}>
+            <Grid item xs={false} sm={1}></Grid>
+            <Grid className={classes.cover} item xs={12} sm={10}>
+              <Paper className={classes.paper} elevation={4}>
+                <ResponsiveContainer width={"100%"} height={"100%"}>
+                  <AreaChart data={converterData.plotData}>
+                    <defs>
+                      <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor="#8884d8"
+                          stopOpacity={0.9}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#8884d8"
+                          stopOpacity={0.1}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      stroke={theme.palette.text.secondary}
+                    />
+                    <YAxis
+                      stroke={theme.palette.text.secondary}
+                      type="number"
+                      domain={[
+                        (dataMin) => {
+                          if (dataMin > 1) {
+                            return Math.floor(dataMin);
+                          } else {
+                            return (dataMin - (2 * dataMin) / 10).toFixed(3);
+                          }
+                        },
+                        (dataMax) => {
+                          if (dataMax > 1) {
+                            return Math.ceil(dataMax);
+                          } else {
+                            return (dataMax + (3 * dataMax) / 10).toFixed(3);
+                          }
+                        },
+                      ]}
+                    />
+                    <Tooltip content={<CustomToolTip />} />
+                    <Legend iconSize={0} />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      name={`Data From: ${getDate(1)} To: ${
+                        converterData.endDate
+                      }`}
+                      stroke={theme.palette.text.primary}
+                      fillOpacity={1}
+                      fill="url(#colorUv)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Paper>
+            </Grid>
+            <Grid item xs={false} sm={1}></Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={false} sm={1}></Grid>
-      </Grid>
-    </Grid>
   );
 };
 

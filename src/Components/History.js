@@ -201,6 +201,11 @@ const History = (props) => {
 
   useEffect(() => {
     props.setPath("History");
+    
+    // Decrease the scrollbar height soo the whit dot in dark mode is not visible
+    const r = document.querySelector(":root");
+    r.style.setProperty("--scrollHeight", "0");
+
     if (isKeySet && keysInitialise.length !== plotAndTime.keys.length) {
       dispatchPlotAndTime({
         type: "INTIALSETPLOTCOUNTRIES",
@@ -211,17 +216,27 @@ const History = (props) => {
       });
     } else if (!isKeySet) {
       async function getKeys() {
-        let result = await FetchKeys();
-        dispatchPlotAndTime({
-          type: "INTIALSETPLOTCOUNTRIES",
-          payload: {
-            keys: result,
-            countries: [id ? id : "INR"],
-          },
+        let failed = false;
+        let result = await FetchKeys().catch(error => {
+          setTimeout(() => {
+            dispatchPlotAndTime({
+              type: "FAILEDTOLOAD", 
+            });
+          }, 1000);
+          failed = true;
         });
-      }
+        if (!failed) {
+          dispatchPlotAndTime({
+            type: "INTIALSETPLOTCOUNTRIES",
+            payload: {
+              keys: result,
+              countries: [id ? id : "INR"],
+            },
+          });
+        };      
+      };
       getKeys();
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -232,13 +247,21 @@ const History = (props) => {
   useEffect(() => {
     if (!plotAndTime.firstRender) {
       const fetchData = async () => {
+        let failed = false;
         let result = await GetHistoryData(
           plotAndTime.base,
           plotAndTime.plotCountries.join(","),
           plotAndTime.startDate,
           plotAndTime.endDate
-        );
-        if (typeof result === "object") {
+        ).catch(error => {
+          setTimeout(() => {
+            dispatchPlotAndTime({
+              type: "FAILEDTOLOAD",
+            });
+          }, 1000);
+          failed = true;
+        });
+        if (typeof result === "object" && !failed) {
           let newPlotData = [];
           result = Object.entries(result);
           result.forEach(([key, value]) => {
@@ -256,12 +279,6 @@ const History = (props) => {
               data: newPlotData,
             },
           });
-        } else {
-          setTimeout(() => {
-            dispatchPlotAndTime({
-              type: "FAILEDTOLOAD",
-            });
-          }, 1000);
         }
       };
       fetchData();
@@ -530,6 +547,7 @@ const History = (props) => {
               <span style={{ marginLeft: "0.25rem" }}>
                 {plotAndTime.plotCountries.map((item, index) => (
                   <Link
+                    key={item + index}
                     style={{ color: theme.palette.success.info }}
                     href={`#${item}`}
                   >
@@ -563,7 +581,7 @@ const History = (props) => {
           </Grid>
         ) : (
           plotAndTime.plotCountries.map((countryName, index) => (
-            <Grid item id={countryName} container style={{ marginTop: 5 }}>
+            <Grid item id={countryName + index} container style={{ marginTop: 5 }}>
               <Grid item xs={false} sm={1}></Grid>
               <Grid className={classes.cover} item xs={12} sm={10}>
                 <Paper

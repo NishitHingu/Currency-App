@@ -146,7 +146,7 @@ function App(props) {
                   keepMounted: true, // Better open performance on mobile.
                 }}
               >
-                <NavOptions />
+                <NavOptions onChange={() => setDrawerState(false)} />
               </Drawer>
             </Hidden>
             <Hidden smDown>

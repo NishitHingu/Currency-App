@@ -49,6 +49,11 @@ const Home = (props) => {
 
   useEffect(() => {
     props.setPath("Home");
+
+    // Decrease the scrollbar height soo the whit dot in dark mode is not visible
+    const r = document.querySelector(":root");
+    r.style.setProperty("--scrollHeight", "0");
+
     if (!isKeySet) {
       async function getKeys() {
         // eslint-disable-next-line no-unused-vars
@@ -93,7 +98,6 @@ const Home = (props) => {
     });
     plot = plot.sort(compare);
     plot.forEach((data, index) => data.rank = index + 1);
-    console.log(plot);
     return plot;
   }
 
@@ -112,7 +116,6 @@ const Home = (props) => {
     }
     return null;
   };
-  console.log(countryTable);
   const classes = useStyles();
 
   return (

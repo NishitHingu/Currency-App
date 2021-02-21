@@ -9,9 +9,11 @@ const CountryKeysContextProvider = (props) => {
   const [keys, setKeys] = useState([]);
   const [isKeySet, setIsKeySet] = useState(false);
   async function FetchKeys() {
-    console.log("getKeysCalled");
-    let result = await GetDataWithBase();
-    if (typeof result === "object") {
+    let failed = false;
+    let result = await GetDataWithBase().catch(error => {
+      failed = true;
+    });
+    if (typeof result === "object" && !failed) {
       result = { ...result, EUR: 1 };
       result = Object.keys(result);
       result.sort();
@@ -19,8 +21,7 @@ const CountryKeysContextProvider = (props) => {
       setIsKeySet(true);
       return result;
     } else {
-      console.log("rejected");
-      return Promise.reject();
+      return Promise.reject(result);
     }
   }
   return (

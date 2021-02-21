@@ -68,6 +68,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
     border: `1px solid ${theme.palette.divider}`,
   },
+  countryOption: {
+    display: "flex", 
+    justifyContent: "flex-end",
+    [theme.breakpoints.down("sm")]: {
+      justifyContent: 'center',
+    },
+
+  },
 }));
 
 const CryptoCurrencyWithID = (props) => {
@@ -84,6 +92,7 @@ const CryptoCurrencyWithID = (props) => {
   const [supportedCountries, setSupportedCountries] = useState([]);
   const [selectedPlot, setSelectedPlot] = useState("prices");
   const [plotData, setPlotData] = useState([]);
+  const [failedToLoad, setFailedToLoad] = useState(false);
   const theme = useTheme();
 
   function createData(
@@ -166,67 +175,84 @@ const CryptoCurrencyWithID = (props) => {
 
   useEffect(() => {
     const GetCountries = async () => {
-      let result = await CryptoCurrencyCountries();
-      result = result.map((value) => value.toUpperCase());
-      setSupportedCountries(result);
+      let failed = false;
+      let result = await CryptoCurrencyCountries().catch(error => {
+        failed = true;
+        setFailedToLoad(true);
+      });
+      if (!failed) {
+        result = result.map((value) => value.toUpperCase());
+        setSupportedCountries(result);
+      };      
     };
     GetCountries();
+
     return function cleanUpScroll() {
       const r = document.querySelector(":root");
       r.style.setProperty("--scrollHeight", "0");
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     props.setPath("CryptoCurrency");
     async function fetchData() {
-      let result = await FetchCryptoData(id ? id : "");
-      console.log(result);
-      let newData = createData(
-        result.id,
-        result.name,
-        result.symbol,
-        result.image.small,
-        result.description.en,
-        result.coingecko_rank,
-        result.coingecko_score,
-        result.community_score,
-        result.community_data.reddit_subscribers,
-        result.community_data.twitter_followers,
-        result.market_cap_rank,
-        result.market_data.market_cap[base.toLocaleLowerCase()],
-        result.market_data.high_24h[base.toLocaleLowerCase()],
-        result.market_data.low_24h[base.toLocaleLowerCase()],
-        result.market_data.market_cap_change_percentage_24h,
-        result.market_data.current_price[base.toLocaleLowerCase()],
-        result.market_data.price_change_percentage_24h,
-        result.market_data.price_change_percentage_30d,
-        result.market_data.price_change_percentage_1y,
-        result.market_data.total_volume[base.toLocaleLowerCase()],
-        result.market_data.total_supply,
-        result.links.homepage[0]
-      );
-      console.log(newData);
-      setData(newData);
-      setLoading(false);
-    }
-    fetchData();  
+      let failed = false;
+      let result = await FetchCryptoData(id ? id : "").catch(error => {
+        failed = true;
+        setFailedToLoad(true);
+      });
+      if (!failed) {
+        let newData = createData(
+          result.id,
+          result.name,
+          result.symbol,
+          result.image.small,
+          result.description.en,
+          result.coingecko_rank,
+          result.coingecko_score,
+          result.community_score,
+          result.community_data.reddit_subscribers,
+          result.community_data.twitter_followers,
+          result.market_cap_rank,
+          result.market_data.market_cap[base.toLocaleLowerCase()],
+          result.market_data.high_24h[base.toLocaleLowerCase()],
+          result.market_data.low_24h[base.toLocaleLowerCase()],
+          result.market_data.market_cap_change_percentage_24h,
+          result.market_data.current_price[base.toLocaleLowerCase()],
+          result.market_data.price_change_percentage_24h,
+          result.market_data.price_change_percentage_30d,
+          result.market_data.price_change_percentage_1y,
+          result.market_data.total_volume[base.toLocaleLowerCase()],
+          result.market_data.total_supply,
+          result.links.homepage[0]
+        );
+        setData(newData);
+        setLoading(false);
+      };      
+    };
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, base]);
 
   useEffect(() => {
     async function historyFetch() {
-      let result = await CryptoHistoryFetch(base, id);
-      result = result[selectedPlot];
-      let newPlotData = result.map((result) =>
-        createPlotData(result[0], result[1])
-      );
-      setPlotData(newPlotData);
-    }
+      let failed = false;
+      let result = await CryptoHistoryFetch(base, id).catch(error => {
+        failed = true;
+        setFailedToLoad(true);
+      });
+      if (!failed) {
+        result = result[selectedPlot];
+        let newPlotData = result.map((result) =>
+          createPlotData(result[0], result[1])
+        );
+        setPlotData(newPlotData);
+      };
+    };
     historyFetch();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[id, base, selectedPlot])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, base, selectedPlot]);
 
   const handleDescription = () => {
     setDescriptionCut(!descriptionCut);
@@ -258,7 +284,9 @@ const CryptoCurrencyWithID = (props) => {
 
   return (
     <div className={classes.loader}>
-      {!loading ? (
+      {failedToLoad ? (
+        <Typography variant='h3' align='center' style={{paddingTop: '20vh'}}>Failed To Load Resources</Typography>
+      ) : ( !loading ? (
         <Grid container spacing={2}>
           <Grid
             item
@@ -523,16 +551,14 @@ const CryptoCurrencyWithID = (props) => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Grid container alignItems="flex-end">
-                  <Grid item xs={12} sm={3} style={{display: 'flex', justifyContent: 'center'}}>
-                    <CountryOption
-                      value={base}
-                      countryNames={supportedCountries}
-                      onChange={handleChangeBase}
-                      optionNo={1}
-                    ></CountryOption>
-                  </Grid>
-                  <Grid item xs={12} sm={9} style={{padding: '1rem 0 0.25rem 2rem'}}>
-                    <ButtonGroup color='primary' disableElevation>
+                  <Grid item xs={1}></Grid>
+                  <Grid
+                    item
+                    xs={11}
+                    sm={9}
+                    style={{ padding: "1rem 0 0.25rem 0rem" }}
+                  >
+                    <ButtonGroup color="primary" disableElevation>
                       <Button
                         onClick={() => handleSetSelectedPlot("prices")}
                         variant={
@@ -565,6 +591,20 @@ const CryptoCurrencyWithID = (props) => {
                       </Button>
                     </ButtonGroup>
                   </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={1}
+                    className={classes.countryOption}
+                  >
+                    <CountryOption
+                      value={base}
+                      countryNames={supportedCountries}
+                      onChange={handleChangeBase}
+                      optionNo={1}
+                    ></CountryOption>
+                  </Grid>
+                  <Grid item xs={false} sm={1}></Grid>
                 </Grid>
               </Grid>
               <Grid item xs={1} sm={false}></Grid>
@@ -578,10 +618,7 @@ const CryptoCurrencyWithID = (props) => {
                     >
                       <CartesianGrid strokeDasharray="2 2" />
                       <XAxis hide padding={{ left: 0, right: 15 }} />
-                      <YAxis
-                      hide
-                        padding={{ bottom: 0, top: 20 }}
-                      />
+                      <YAxis hide padding={{ bottom: 0, top: 20 }} />
                       <Tooltip content={<CustomToolTip />} />
                       <Line
                         type="monotone"
@@ -603,7 +640,7 @@ const CryptoCurrencyWithID = (props) => {
         <div className={classes.loader}>
           <Loader />
         </div>
-      )}
+      ))}
     </div>
   );
 };
