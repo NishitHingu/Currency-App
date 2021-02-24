@@ -122,7 +122,7 @@ const Home = (props) => {
     <div className={classes.root}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Typography variant="h3" align='center'>Currency Ranking</Typography>
+          <Typography variant="h3">Currency Ranking</Typography>
           <Typography variant="body1" style={{marginTop: '1rem',}}>
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi itaque dignissimos molestias doloribus veritatis repellat omnis illo aspernatur beatae ipsam distinctio, molestiae deleniti aperiam quo similique illum doloremque voluptates quaerat.
     Quas exercitationem itaque iusto minus. Autem ea suscipit beatae, magnam accusantium in necessitatibus odit. Illum explicabo amet tenetur consectetur unde, quam ex reprehenderit suscipit earum corporis asperiores numquam, consequatur magnam!
@@ -145,7 +145,7 @@ const Home = (props) => {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke={theme.palette.success[theme.palette.type]}
+                  stroke={theme.palette.text.primary}
                   strokeWidth={3}
                   name={`Conversion rate with base country as ${countryTable[base]}`}
                   animationDuration={1000}

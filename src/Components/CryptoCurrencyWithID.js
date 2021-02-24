@@ -69,12 +69,11 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${theme.palette.divider}`,
   },
   countryOption: {
-    display: "flex", 
+    display: "flex",
     justifyContent: "flex-end",
     [theme.breakpoints.down("sm")]: {
-      justifyContent: 'center',
+      justifyContent: "center",
     },
-
   },
 }));
 
@@ -174,31 +173,29 @@ const CryptoCurrencyWithID = (props) => {
   }
 
   useEffect(() => {
+    props.setPath("CryptoCurrency");
+    // Decreasing the scroll size back to zero to hide the white dot in dark mode
+    const r = document.querySelector(":root");
+    r.style.setProperty("--scrollHeight", "0");
     const GetCountries = async () => {
       let failed = false;
-      let result = await CryptoCurrencyCountries().catch(error => {
+      let result = await CryptoCurrencyCountries().catch((error) => {
         failed = true;
         setFailedToLoad(true);
       });
       if (!failed) {
         result = result.map((value) => value.toUpperCase());
         setSupportedCountries(result);
-      };      
+      }
     };
     GetCountries();
-
-    return function cleanUpScroll() {
-      const r = document.querySelector(":root");
-      r.style.setProperty("--scrollHeight", "0");
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    props.setPath("CryptoCurrency");
     async function fetchData() {
       let failed = false;
-      let result = await FetchCryptoData(id ? id : "").catch(error => {
+      let result = await FetchCryptoData(id ? id : "").catch((error) => {
         failed = true;
         setFailedToLoad(true);
       });
@@ -229,8 +226,8 @@ const CryptoCurrencyWithID = (props) => {
         );
         setData(newData);
         setLoading(false);
-      };      
-    };
+      }
+    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, base]);
@@ -238,7 +235,7 @@ const CryptoCurrencyWithID = (props) => {
   useEffect(() => {
     async function historyFetch() {
       let failed = false;
-      let result = await CryptoHistoryFetch(base, id).catch(error => {
+      let result = await CryptoHistoryFetch(base, id).catch((error) => {
         failed = true;
         setFailedToLoad(true);
       });
@@ -248,8 +245,8 @@ const CryptoCurrencyWithID = (props) => {
           createPlotData(result[0], result[1])
         );
         setPlotData(newPlotData);
-      };
-    };
+      }
+    }
     historyFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, base, selectedPlot]);
@@ -285,8 +282,10 @@ const CryptoCurrencyWithID = (props) => {
   return (
     <div className={classes.loader}>
       {failedToLoad ? (
-        <Typography variant='h3' align='center' style={{paddingTop: '20vh'}}>Failed To Load Resources</Typography>
-      ) : ( !loading ? (
+        <Typography variant="h3" align="center" style={{ paddingTop: "20vh" }}>
+          Failed To Load Resources
+        </Typography>
+      ) : !loading ? (
         <Grid container spacing={2}>
           <Grid
             item
@@ -433,30 +432,32 @@ const CryptoCurrencyWithID = (props) => {
             </Grid>
           </Grid>
           <Grid item xs={12} style={{ padding: "1rem" }}>
-            <Paper style={{ padding: "1rem", position: "relative" }}>
-              <Grid container>
-                <Grid item xs={12} style={{ position: "relative" }}>
-                  <Typography variant="h6">Description</Typography>
-                  <Typography
-                    component="div"
-                    variant="body2"
-                    className={descriptionCut ? classes.description : null}
-                  >
-                    <span
-                      dangerouslySetInnerHTML={{ __html: data.description }}
-                    ></span>
-                    <Typography align="center" className={classes.readMore}>
-                      <Button
-                        style={{ width: "100%" }}
-                        onClick={handleDescription}
-                      >
-                        Read {descriptionCut ? "More" : "Less"}
-                      </Button>
+            {data.description.length > 0 ? (
+              <Paper style={{ padding: "1rem", position: "relative" }}>
+                <Grid container>
+                  <Grid item xs={12} style={{ position: "relative" }}>
+                    <Typography variant="h6">Description</Typography>
+                    <Typography
+                      component="div"
+                      variant="body2"
+                      className={descriptionCut ? classes.description : null}
+                    >
+                      <span
+                        dangerouslySetInnerHTML={{ __html: data.description }}
+                      ></span>
+                      <Typography align="center" className={classes.readMore}>
+                        <Button
+                          style={{ width: "100%" }}
+                          onClick={handleDescription}
+                        >
+                          Read {descriptionCut ? "More" : "Less"}
+                        </Button>
+                      </Typography>
                     </Typography>
-                  </Typography>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Paper>
+              </Paper>
+            ) : null}
             <Paper style={{ padding: "1rem", marginTop: "1rem" }}>
               <Grid container>
                 <Grid item xs={12}>
@@ -591,12 +592,7 @@ const CryptoCurrencyWithID = (props) => {
                       </Button>
                     </ButtonGroup>
                   </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    sm={1}
-                    className={classes.countryOption}
-                  >
+                  <Grid item xs={12} sm={1} className={classes.countryOption}>
                     <CountryOption
                       value={base}
                       countryNames={supportedCountries}
@@ -640,7 +636,7 @@ const CryptoCurrencyWithID = (props) => {
         <div className={classes.loader}>
           <Loader />
         </div>
-      ))}
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { TextField, Grid, Paper } from "@material-ui/core";
+import { TextField, Grid, Paper, Typography } from "@material-ui/core";
 import { useEffect, useContext, useReducer } from "react";
 import { FetchContext } from "../Context/FetchContext";
 import { CountryKeysContext } from "../Context/CountryKeysContext";
@@ -20,12 +20,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 15,
   },
   cover: {
-    height: "60vh",
+    height: "50vh",
     padding: 10,
     overflow: "scroll",
   },
   paper: {
-    padding: "1rem 2rem 1rem 0",
+    padding: "1rem 0",
     minWidth: 500,
     height: "100%",
   },
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputFeildArea: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "baseline",
     marginBottom: 15,
   },
@@ -116,7 +116,7 @@ const Converter = (props) => {
     return yyyy + "-" + mm + "-" + dd;
   };
 
-  const { setData, GetHistoryData } = useContext(FetchContext);
+  const { countryTable, setData, GetHistoryData } = useContext(FetchContext);
   const { keys, isKeySet, FetchKeys } = useContext(CountryKeysContext);
   const theme = useTheme();
   const [converterData, dispatchConverterData] = useReducer(
@@ -136,6 +136,9 @@ const Converter = (props) => {
 
   useEffect(() => {
     props.setPath("Converter");
+    // Decreasing the scroll size back to zero to hide the white dot in dark mode
+    const r = document.querySelector(":root");
+    r.style.setProperty("--scrollHeight", "0");
     if (isKeySet && keys.length !== converterData.countries.length) {
       dispatchConverterData({
         type: "SET_COUNTRIES",
@@ -290,6 +293,9 @@ const Converter = (props) => {
 
   return (
         <Grid container direction="column" spacing={2}>
+        <Grid item xs={12}>
+          <Typography variant="h4">Live Forex</Typography>
+        </Grid>
           <div className={classes.inputFeildArea}>
             <CountryOption
               value={converterData.firstCountry}
@@ -333,31 +339,31 @@ const Converter = (props) => {
             />
           </div>
           <Grid item container style={{ marginTop: 5 }}>
-            <Grid item xs={false} sm={1}></Grid>
-            <Grid className={classes.cover} item xs={12} sm={10}>
+            <Grid className={classes.cover} item xs={12}>
               <Paper className={classes.paper} elevation={4}>
                 <ResponsiveContainer width={"100%"} height={"100%"}>
-                  <AreaChart data={converterData.plotData}>
-                    <defs>
+                  <AreaChart data={converterData.plotData} margin={{right: 0}}>
+                  <defs>
                       <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                         <stop
-                          offset="5%"
-                          stopColor="#8884d8"
+                          offset="2%"
+                          stopColor={theme.palette.graph.primary}
                           stopOpacity={0.9}
                         />
                         <stop
-                          offset="95%"
-                          stopColor="#8884d8"
+                          offset="97%"
+                          stopColor={theme.palette.graph.secondary}
                           stopOpacity={0.1}
                         />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    {/* <CartesianGrid strokeDasharray="3 3" /> */}
                     <XAxis
                       dataKey="name"
                       stroke={theme.palette.text.secondary}
                     />
                     <YAxis
+                      hide
                       stroke={theme.palette.text.secondary}
                       type="number"
                       domain={[
@@ -382,10 +388,11 @@ const Converter = (props) => {
                     <Area
                       type="monotone"
                       dataKey="value"
-                      name={`Data From: ${getDate(1)} To: ${
+                      name={`Historical Forex Data: ${getDate(1)} - ${
                         converterData.endDate
-                      }`}
+                      } with base as ${countryTable[converterData.firstCountry]}`}
                       stroke={theme.palette.text.primary}
+                      strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorUv)"
                     />
@@ -393,7 +400,6 @@ const Converter = (props) => {
                 </ResponsiveContainer>
               </Paper>
             </Grid>
-            <Grid item xs={false} sm={1}></Grid>
           </Grid>
         </Grid>
   );

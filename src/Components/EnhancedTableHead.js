@@ -1,5 +1,11 @@
-import { TableCell, TableHead, TableRow, TableSortLabel } from "@material-ui/core";
+import { makeStyles, TableCell, TableHead, TableRow, TableSortLabel } from "@material-ui/core";
 import React from "react";
+
+const useStyles = makeStyles((theme) => ({
+  title: {
+    backgroundColor: theme.palette.background.paper,
+  }
+}))
 
 const EnhancedTableHead = (props) => {
   const {
@@ -12,11 +18,14 @@ const EnhancedTableHead = (props) => {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+  const classesNew = useStyles();
+
   return (
-    <TableHead>
-      <TableRow>
+    <TableHead >
+      <TableRow >
 				{headCell.map(headCell => (
 					<TableCell
+            className={classesNew.title}
             key={headCell.id}
             align={headCell.align}
             padding={headCell.disablePadding ? 'none' : 'default'}

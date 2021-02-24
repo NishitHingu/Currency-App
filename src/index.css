@@ -37,6 +37,13 @@ code {
   background: #555; 
 }
 
+/* Disabling the default border applied by Material UI
+.MuiDrawer-paperAnchorDockedLeft {
+  
+  border: 0 !important;  
+  
+} */
+
 /* Spinner animations */
 
 @keyframes spinner-line-fade-more {

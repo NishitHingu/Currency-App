@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "scroll",
   },
   paper: {
-    padding: "1rem 0.5rem 1rem 0",
+    padding: "1rem 0",
     minWidth: 500,
     height: "100%",
   },
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     opacity: 1,
     padding: "2px 5px",
     color: "444",
-    backgroundColor: "hsla(0,0%,100%,0.4)",
+    backgroundColor: theme.palette.background.default,
   },
   dialogBox: {
     margin: "2rem",
@@ -201,7 +201,7 @@ const History = (props) => {
 
   useEffect(() => {
     props.setPath("History");
-    
+
     // Decrease the scrollbar height soo the whit dot in dark mode is not visible
     const r = document.querySelector(":root");
     r.style.setProperty("--scrollHeight", "0");
@@ -217,10 +217,10 @@ const History = (props) => {
     } else if (!isKeySet) {
       async function getKeys() {
         let failed = false;
-        let result = await FetchKeys().catch(error => {
+        let result = await FetchKeys().catch((error) => {
           setTimeout(() => {
             dispatchPlotAndTime({
-              type: "FAILEDTOLOAD", 
+              type: "FAILEDTOLOAD",
             });
           }, 1000);
           failed = true;
@@ -233,10 +233,10 @@ const History = (props) => {
               countries: [id ? id : "INR"],
             },
           });
-        };      
-      };
+        }
+      }
       getKeys();
-    };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -253,7 +253,7 @@ const History = (props) => {
           plotAndTime.plotCountries.join(","),
           plotAndTime.startDate,
           plotAndTime.endDate
-        ).catch(error => {
+        ).catch((error) => {
           setTimeout(() => {
             dispatchPlotAndTime({
               type: "FAILEDTOLOAD",
@@ -418,7 +418,12 @@ const History = (props) => {
 
   return (
     <Grid container direction="column" spacing={2}>
-      <Grid item container spacing={0}>
+      <Grid item container spacing={1}>
+        <Grid item xs={12}>
+          <Typography align="center" variant="h4">
+            Compare Historical Data
+          </Typography>
+        </Grid>
         <Grid item xs={12} className={classes.options}>
           <Tabs
             className={classes.tabs}
@@ -464,14 +469,14 @@ const History = (props) => {
                 <Button
                   onClick={handleCloseCountryDialogBox}
                   variant="contained"
-                  color={"primary"}
+                  color="primary"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleCountryDialogBoxSubmit}
                   variant="contained"
-                  color={"primary"}
+                  color="primary"
                 >
                   Ok
                 </Button>
@@ -547,7 +552,7 @@ const History = (props) => {
               <span style={{ marginLeft: "0.25rem" }}>
                 {plotAndTime.plotCountries.map((item, index) => (
                   <Link
-                    key={item + index}
+                    key={item}
                     style={{ color: theme.palette.success.info }}
                     href={`#${item}`}
                   >
@@ -581,13 +586,13 @@ const History = (props) => {
           </Grid>
         ) : (
           plotAndTime.plotCountries.map((countryName, index) => (
-            <Grid item id={countryName + index} container style={{ marginTop: 5 }}>
+            <Grid item id={countryName} container style={{ marginTop: 5 }}>
               <Grid item xs={false} sm={1}></Grid>
               <Grid className={classes.cover} item xs={12} sm={10}>
                 <Paper
                   style={{ position: "relative" }}
                   className={classes.paper}
-                  elevation={4}
+                  elevation={3}
                 >
                   <Grid container>
                     <Grid item xs={1}></Grid>
@@ -612,7 +617,7 @@ const History = (props) => {
                         data={plotAndTime.plotData}
                         margin={{
                           top: 10,
-                          right: 30,
+                          right: 0,
                           left: 0,
                           bottom: 10,
                         }}
@@ -627,23 +632,24 @@ const History = (props) => {
                             y2="1"
                           >
                             <stop
-                              offset="5%"
-                              stopColor="#8884d8"
+                              offset="2%"
+                              stopColor={theme.palette.graph.primary}
                               stopOpacity={0.9}
                             />
                             <stop
-                              offset="95%"
-                              stopColor="#8884d8"
+                              offset="97%"
+                              stopColor={theme.palette.graph.secondary}
                               stopOpacity={0.1}
                             />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" />
+                        {/* <CartesianGrid strokeDasharray="2 2" /> */}
                         <XAxis
                           dataKey="name"
                           stroke={theme.palette.text.secondary}
                         />
                         <YAxis
+                          hide
                           stroke={theme.palette.text.secondary}
                           type="number"
                           domain={[
@@ -671,7 +677,8 @@ const History = (props) => {
                         <Area
                           type="monotone"
                           dataKey={countryName}
-                          stroke={theme.palette.text.secondary}
+                          stroke={theme.palette.text.primary}
+                          strokeWidth={3}
                           fillOpacity={1}
                           fill="url(#colorUv)"
                         />
