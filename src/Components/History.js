@@ -19,7 +19,6 @@ import Paper from "@material-ui/core/Paper";
 import CountryOption from "./CountryOption";
 import {
   AreaChart,
-  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
@@ -418,152 +417,155 @@ const History = (props) => {
 
   return (
     <Grid container direction="column" spacing={2}>
-      <Grid item container spacing={1}>
-        <Grid item xs={12}>
-          <Typography align="center" variant="h4">
-            Compare Historical Data
-          </Typography>
-        </Grid>
-        <Grid item xs={12} className={classes.options}>
-          <Tabs
-            className={classes.tabs}
-            value={plotAndTime.dataTime}
-            onChange={handleChangeTime}
-            textColor="primary"
-            indicatorColor="primary"
-            centered
+      <Grid item>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography align="center" variant="h4">
+              Compare Historical Data
+            </Typography>
+          </Grid>
+          <Grid item xs={12} className={classes.options}>
+            <Tabs
+              className={classes.tabs}
+              value={plotAndTime.dataTime}
+              onChange={handleChangeTime}
+              textColor="primary"
+              indicatorColor="primary"
+              centered
+            >
+              <Tab label="1M" value="1M" />
+              <Tab label="1Y" value="1Y" />
+              <Tab label="5Y" value="5Y" />
+              <Tab label="Max" value="MAX" />
+            </Tabs>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container justify="center">
+              <Button
+                style={{ marginRight: "0.5rem" }}
+                variant="contained"
+                color="primary"
+                elevation={2}
+                onClick={handleClickCountryOpenDialogBox}
+              >
+                + Add Country
+              </Button>
+              <Dialog
+                disableBackdropClick
+                disableEscapeKeyDown
+                open={dialogBox.countryOpen}
+                onClose={handleClickCountryOpenDialogBox}
+              >
+                <div className={classes.dialogBox}>
+                  <DialogTitle>Choose Country</DialogTitle>
+                  <DialogContent>
+                    <CountryOption
+                      value={dialogBox.dialogBoxInput}
+                      onChange={handleDailogBoxInputChange}
+                      countryNames={plotAndTime.keys}
+                      optionNo={1}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      onClick={handleCloseCountryDialogBox}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleCountryDialogBoxSubmit}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Ok
+                    </Button>
+                  </DialogActions>
+                </div>
+              </Dialog>
+              <Button
+                style={{ marginLeft: "0.5rem" }}
+                variant="contained"
+                color="primary"
+                elevation={2}
+                onClick={handleClickBaseOpenDialogBox}
+              >
+                Change Base
+              </Button>
+              <Dialog
+                disableBackdropClick
+                disableEscapeKeyDown
+                open={dialogBox.baseOpen}
+                onClose={handleCloseBaseDialogBox}
+              >
+                <div className={classes.dialogBox}>
+                  <DialogTitle>Choose Base</DialogTitle>
+                  <DialogContent>
+                    <CountryOption
+                      value={dialogBox.dialogBoxInput}
+                      onChange={handleDailogBoxInputChange}
+                      countryNames={plotAndTime.keys}
+                      optionNo={1}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      onClick={handleCloseBaseDialogBox}
+                      variant="contained"
+                      color={"primary"}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleBaseDialogBoxSubmit}
+                      variant="contained"
+                      color={"primary"}
+                    >
+                      Ok
+                    </Button>
+                  </DialogActions>
+                </div>
+              </Dialog>
+            </Grid>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            style={{ marginTop: "0.5rem" }}
           >
-            <Tab label="1M" value="1M" />
-            <Tab label="1Y" value="1Y" />
-            <Tab label="5Y" value="5Y" />
-            <Tab label="Max" value="MAX" />
-          </Tabs>
-        </Grid>
-        <Grid item xs={12} container style={{ flexGrow: 1 }} justify="center">
-          <Button
-            style={{ marginRight: "0.5rem" }}
-            variant="contained"
-            color="primary"
-            elevation={2}
-            onClick={handleClickCountryOpenDialogBox}
-          >
-            + Add Country
-          </Button>
-          <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
-            open={dialogBox.countryOpen}
-            onClose={handleClickCountryOpenDialogBox}
-          >
-            <div className={classes.dialogBox}>
-              <DialogTitle>Choose Country</DialogTitle>
-              <DialogContent>
-                <CountryOption
-                  value={dialogBox.dialogBoxInput}
-                  onChange={handleDailogBoxInputChange}
-                  countryNames={plotAndTime.keys}
-                  optionNo={1}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  onClick={handleCloseCountryDialogBox}
-                  variant="contained"
-                  color="primary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCountryDialogBoxSubmit}
-                  variant="contained"
-                  color="primary"
-                >
-                  Ok
-                </Button>
-              </DialogActions>
-            </div>
-          </Dialog>
-          <Button
-            style={{ marginLeft: "0.5rem" }}
-            variant="contained"
-            color="primary"
-            elevation={2}
-            onClick={handleClickBaseOpenDialogBox}
-          >
-            Change Base
-          </Button>
-          <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
-            open={dialogBox.baseOpen}
-            onClose={handleCloseBaseDialogBox}
-          >
-            <div className={classes.dialogBox}>
-              <DialogTitle>Choose Base</DialogTitle>
-              <DialogContent>
-                <CountryOption
-                  value={dialogBox.dialogBoxInput}
-                  onChange={handleDailogBoxInputChange}
-                  countryNames={plotAndTime.keys}
-                  optionNo={1}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  onClick={handleCloseBaseDialogBox}
-                  variant="contained"
-                  color={"primary"}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleBaseDialogBoxSubmit}
-                  variant="contained"
-                  color={"primary"}
-                >
-                  Ok
-                </Button>
-              </DialogActions>
-            </div>
-          </Dialog>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          container
-          style={{ flexGrow: 1, marginTop: "0.5rem" }}
-          direction="column"
-          justify="center"
-        >
-          <Typography variant="caption" align="center" component="div">
-            <span style={{ marginRight: "0.5rem" }}>
-              {`Data From: ${plotAndTime.startDate} `}
-            </span>
-            <span
-              style={{ marginLeft: "0.5rem" }}
-            >{` To: ${plotAndTime.endDate}`}</span>
-          </Typography>
-          <Typography variant="caption" align="center" component="div">
-            <span style={{ marginRight: "0.5rem" }}>
-              Base Country: {plotAndTime.base}
-            </span>
-            <span style={{ marginLeft: "0.5rem" }}>
-              PlotedCountries:
-              <span style={{ marginLeft: "0.25rem" }}>
-                {plotAndTime.plotCountries.map((item, index) => (
-                  <Link
-                    key={item}
-                    style={{ color: theme.palette.success.info }}
-                    href={`#${item}`}
-                  >
-                    {index !== plotAndTime.plotCountries.length - 1
-                      ? item + ","
-                      : item}
-                  </Link>
-                ))}
+          <Grid container justify="center" direction="column">
+            <Typography variant="caption" align="center" component="div">
+              <span style={{ marginRight: "0.5rem" }}>
+                {`Data From: ${plotAndTime.startDate} `}
               </span>
-            </span>
-          </Typography>
+              <span
+                style={{ marginLeft: "0.5rem" }}
+              >{` To: ${plotAndTime.endDate}`}</span>
+            </Typography>
+            <Typography variant="caption" align="center" component="div">
+              <span style={{ marginRight: "0.5rem" }}>
+                Base Country: {plotAndTime.base}
+              </span>
+              <span style={{ marginLeft: "0.5rem" }}>
+                PlotedCountries:
+                <span style={{ marginLeft: "0.25rem" }}>
+                  {plotAndTime.plotCountries.map((item, index) => (
+                    <Link
+                      key={item}
+                      style={{ color: theme.palette.success.info }}
+                      href={`#${item}`}
+                    >
+                      {index !== plotAndTime.plotCountries.length - 1
+                        ? item + ","
+                        : item}
+                    </Link>
+                  ))}
+                </span>
+              </span>
+            </Typography>
+          </Grid>
+          </Grid>
         </Grid>
       </Grid>
       {plotAndTime.failedToLoadData && (

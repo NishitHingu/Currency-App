@@ -11,11 +11,10 @@
 
 ### Description
 
-A site were you can compare and do currency conversions.  
-Its has 4 main components: 
+A React app where you can do currency converstion, compare currencies of different countries by looking at their historical forex rates and have a look at statistical data about Crypto Currency.
 * Home
 * History
 * Compare
 * CryptoCurrency  
 
-### View at: https://nishithingu.github.io/Currency-App/  
+#### View at: https://nishithingu.github.io/Currency-App/  

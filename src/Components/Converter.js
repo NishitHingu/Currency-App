@@ -6,7 +6,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CountryOption from "./CountryOption";
 import {
   AreaChart,
-  CartesianGrid,
   XAxis,
   YAxis,
   Legend,
@@ -357,7 +356,6 @@ const Converter = (props) => {
                         />
                       </linearGradient>
                     </defs>
-                    {/* <CartesianGrid strokeDasharray="3 3" /> */}
                     <XAxis
                       dataKey="name"
                       stroke={theme.palette.text.secondary}

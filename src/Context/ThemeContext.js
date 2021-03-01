@@ -10,8 +10,8 @@ const ThemeContextProvider = (props) => {
     palette: {
       type: mode === "dark" ? "dark" : "light",
       primary: {
-        light: "#0f0e17",
-        dark: "#1d1d1d",
+        light: "#ff9723",
+        dark: "#c96a00",
         main: "#ff8906",
         contrastText: "#fffffe",
       },
@@ -24,11 +24,12 @@ const ThemeContextProvider = (props) => {
       },
       background: {
         default: mode === "dark" ?  "#1a1d26" : "#fffffe",
-        paper:  mode === "dark" ?  "#0f0e17" : "#f4f4f5",
+        paper:  mode === "dark" ?  "#14131f" : "#f4f4f5",
       },
       graph: {
         primary: "#f4f4f5",
-        secondary: "#a5a5a5",
+        secondary: "#a6a2c7",
+        barGraph: mode !== "dark" ?  "#ff9723" : "#cf6d00",
       },
       sideBar: {
         background: "#0f0e17",

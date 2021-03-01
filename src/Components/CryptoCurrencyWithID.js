@@ -402,7 +402,7 @@ const CryptoCurrencyWithID = (props) => {
                       Cap: {convertToLocaleString(data.market.market_cap)}
                     </Grid>
                     <Grid item xs={12} className={classes.info}>
-                      24h High / 24h Low:
+                      24h High/24h Low:
                       <Typography
                         component="span"
                         variant="body2"
@@ -448,6 +448,8 @@ const CryptoCurrencyWithID = (props) => {
                       <Typography align="center" className={classes.readMore}>
                         <Button
                           style={{ width: "100%" }}
+                          color="primary"
+                          variant="contained"
                           onClick={handleDescription}
                         >
                           Read {descriptionCut ? "More" : "Less"}
@@ -620,7 +622,7 @@ const CryptoCurrencyWithID = (props) => {
                         type="monotone"
                         dot={false}
                         dataKey="value"
-                        stroke={theme.palette.info[theme.palette.type]}
+                        stroke={theme.palette.primary[theme.palette.type]}
                         strokeWidth={2}
                         animationDuration={1000}
                       />
