@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from "@material-ui/core/Paper";
 import CountryOption from "./CountryOption";
 import {
@@ -292,19 +293,20 @@ const History = (props) => {
         newDate = getDate(0, 1);
         break;
 
+      case "3M":
+        newDate = getDate(0, 3);
+        break;
+
+      case "9M":
+        newDate = getDate(0, 9);
+        break;
+
       case "1Y":
         newDate = getDate(1, 0);
         break;
 
-      case "5Y":
-        newDate = getDate(5, 0);
-        break;
-
-      case "MAX":
-        newDate = getDate(12, 0);
-        break;
-
       default:
+        newDate = getDate(0, 1);
         break;
     }
     dispatchPlotAndTime({
@@ -434,9 +436,9 @@ const History = (props) => {
               centered
             >
               <Tab label="1M" value="1M" />
+              <Tab label="3M" value="3M" />
+              <Tab label="9M" value="9M" />
               <Tab label="1Y" value="1Y" />
-              <Tab label="5Y" value="5Y" />
-              <Tab label="Max" value="MAX" />
             </Tabs>
           </Grid>
           <Grid item xs={12}>
@@ -572,8 +574,6 @@ const History = (props) => {
         <Grid
           item
           xs={12}
-          justify="center"
-          alignItems="center"
           style={{ marginTop: "3rem" }}
         >
           <Typography component="div" variant="h4" align="center">
@@ -583,8 +583,8 @@ const History = (props) => {
       )}
       {!plotAndTime.failedToLoadData ? (
         plotAndTime.fetchingData ? (
-          <Grid item xs={12} style={{ position: "relative", height: "50vh" }}>
-            <Loader />
+          <Grid item xs={12} style={{ height: "50vh", margin: "2rem auto" }}>
+            <CircularProgress style={{color: theme.palette.sideBar.background, opacity: 0.8}} />
           </Grid>
         ) : (
           plotAndTime.plotCountries.map((countryName, index) => (

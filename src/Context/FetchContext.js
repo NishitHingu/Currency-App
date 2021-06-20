@@ -39,12 +39,17 @@ const FetchContextProvider = (props) => {
     USD: "United States",
     ZAR: "South Africa",
   };
-
+  let symbols = Object.keys(countryTable);
+  symbols = symbols.join(",");
   const [data, setData] = useState();
 
   async function GetDataWithBase(base) {
     let result = await axios
-      .get(`https://api.ratesapi.io/api/latest?base=${base ? base : "EUR"}`)
+      .get(
+        `https://api.exchangerate.host/latest?base=${
+          base ? base : "EUR"
+        }&symbols=${symbols}`
+      )
       .then((result) => {
         return result.data.rates;
       })
@@ -57,13 +62,11 @@ const FetchContextProvider = (props) => {
   async function GetHistoryData(base, symbol, start, end) {
     let result = await axios
       .get(
-        `https://api.ratesapi.io/api/${end}?base=${
-          base ? base : "EUR"
-        }&symbols=${symbol}`
+        `https://api.exchangerate.host/timeseries?start_date=${start}&end_date=${end}&base=${base ? base : "EUR"}&symbols=${symbol}`
       )
       .then((result) => {
         console.log(result);
-        return Promise.reject("failed to get resources");
+        return Promise.resolve(result.data.rates);
       })
       .catch((error) => {
         console.log(error);

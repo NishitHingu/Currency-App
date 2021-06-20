@@ -5,9 +5,10 @@
 * [Material UI](https://material-ui.com/)
 * [Recharts](https://recharts.org/en-US/)
 
-### API's
-* [Exchange Rates Api](https://github.com/exchangeratesapi/exchangeratesapi)
-* [CoinGecko](https://www.coingecko.com/en/api)
+### API used
+* [exchangerate.host](https://exchangerate.host/#/)- Country Forex data
+* [CoinGecko](https://www.coingecko.com/en/api)- CryptoCurrency data
+
 
 ### Description
 
