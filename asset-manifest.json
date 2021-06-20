@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/Currency-App/static/css/main.c94548de.chunk.css",
-    "main.js": "/Currency-App/static/js/main.7023c326.chunk.js",
-    "main.js.map": "/Currency-App/static/js/main.7023c326.chunk.js.map",
+    "main.js": "/Currency-App/static/js/main.646066aa.chunk.js",
+    "main.js.map": "/Currency-App/static/js/main.646066aa.chunk.js.map",
     "runtime-main.js": "/Currency-App/static/js/runtime-main.8c0d753f.js",
     "runtime-main.js.map": "/Currency-App/static/js/runtime-main.8c0d753f.js.map",
-    "static/js/2.946b80ca.chunk.js": "/Currency-App/static/js/2.946b80ca.chunk.js",
-    "static/js/2.946b80ca.chunk.js.map": "/Currency-App/static/js/2.946b80ca.chunk.js.map",
+    "static/js/2.f7bb2784.chunk.js": "/Currency-App/static/js/2.f7bb2784.chunk.js",
+    "static/js/2.f7bb2784.chunk.js.map": "/Currency-App/static/js/2.f7bb2784.chunk.js.map",
     "index.html": "/Currency-App/index.html",
     "static/css/main.c94548de.chunk.css.map": "/Currency-App/static/css/main.c94548de.chunk.css.map",
-    "static/js/2.946b80ca.chunk.js.LICENSE.txt": "/Currency-App/static/js/2.946b80ca.chunk.js.LICENSE.txt"
+    "static/js/2.f7bb2784.chunk.js.LICENSE.txt": "/Currency-App/static/js/2.f7bb2784.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.8c0d753f.js",
-    "static/js/2.946b80ca.chunk.js",
+    "static/js/2.f7bb2784.chunk.js",
     "static/css/main.c94548de.chunk.css",
-    "static/js/main.7023c326.chunk.js"
+    "static/js/main.646066aa.chunk.js"
   ]
 }
