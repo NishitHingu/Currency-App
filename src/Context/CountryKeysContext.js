@@ -5,24 +5,13 @@ import { useState, useContext, createContext } from "react";
 export const CountryKeysContext = createContext();
 
 const CountryKeysContextProvider = (props) => {
-  const { GetDataWithBase } = useContext(FetchContext);
+  const { countryTable } = useContext(FetchContext);
   const [keys, setKeys] = useState([]);
   const [isKeySet, setIsKeySet] = useState(false);
   async function FetchKeys() {
-    let failed = false;
-    let result = await GetDataWithBase().catch(error => {
-      failed = true;
-    });
-    if (typeof result === "object" && !failed) {
-      result = { ...result, EUR: 1 };
-      result = Object.keys(result);
-      result.sort();
-      setKeys(result);
-      setIsKeySet(true);
-      return result;
-    } else {
-      return Promise.reject(result);
-    }
+    setKeys(Object.keys(countryTable));
+    setIsKeySet(true);
+    return Promise.resolve(Object.keys(countryTable));
   }
   return (
     <CountryKeysContext.Provider value={{ keys, isKeySet, FetchKeys }}>

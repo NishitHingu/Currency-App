@@ -115,7 +115,7 @@ const Converter = (props) => {
     return yyyy + "-" + mm + "-" + dd;
   };
 
-  const { countryTable, setData, GetHistoryData } = useContext(FetchContext);
+  const { countryTable, GetConvertionRate } = useContext(FetchContext);
   const { keys, isKeySet, FetchKeys } = useContext(CountryKeysContext);
   const theme = useTheme();
   const [converterData, dispatchConverterData] = useReducer(
@@ -167,51 +167,17 @@ const Converter = (props) => {
   useEffect(() => {
     const startDate = getDate(1);
     const fetchData = async () => {
-      let result = await GetHistoryData(
-        converterData.firstCountry,
-        converterData.secondCountry,
-        startDate,
-        converterData.endDate
-      );
-      if (typeof result === "object") {
-        let newPlotData = [];
-        result = Object.entries(result);
-        setData(result);
-        result.forEach(([key, value]) => {
-          newPlotData.push({
-            name: key,
-            value: value[converterData.secondCountry],
-          });
-        });
-        newPlotData.sort(compare); // Some data is jummbled that's why this sort
-        let convRate = newPlotData[newPlotData.length - 1].value;
-        dispatchConverterData({
-          type: "SETPLOTDATA&CONVERTIONRATE",
-          payload: {
-            plotData: newPlotData,
-            rate: convRate,
-          },
-        });
-        if (converterData.changedFirstCountry) {
-          let newValue = converterData.firstValue * convRate;
-          dispatchConverterData({
-            type: "UPDATEVALUES",
-            payload: {
-              firstVal: converterData.firstValue,
-              secondVal: newValue,
-            },
-          });
-        } else {
-          let newValue = converterData.secondValue / convRate;
-          dispatchConverterData({
-            type: "UPDATEVALUES",
-            payload: {
-              firstVal: newValue,
-              secondVal: converterData.secondValue,
-            },
-          });
-        }
-      }
+      let result = await GetConvertionRate(converterData.firstCountry, converterData.secondCountry);
+      let conversionRate = result[converterData.secondCountry.toLocaleLowerCase()];
+      dispatchConverterData({
+        type: "UPDATE_CONVERSIONRATE",
+        payload: conversionRate,
+      });
+
+      dispatchConverterData({
+        type: "UPDATE_SECONDVALUE",
+        payload: conversionRate * converterData.firstValue,
+      })
     };
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -340,6 +306,9 @@ const Converter = (props) => {
           <Grid item container style={{ marginTop: 5 }}>
             <Grid className={classes.cover} item xs={12}>
               <Paper className={classes.paper} elevation={4}>
+              {converterData.plotData.length === 0 ? (
+                <Typography variant="h5" style={{margin: "10px"}} align="center">Due to the unavailability of the API, unable to display graphs.</Typography>
+              ) : (
                 <ResponsiveContainer width={"100%"} height={"100%"}>
                   <AreaChart data={converterData.plotData} margin={{right: 0}}>
                   <defs>
@@ -396,6 +365,7 @@ const Converter = (props) => {
                     />
                   </AreaChart>
                 </ResponsiveContainer>
+              )}
               </Paper>
             </Grid>
           </Grid>

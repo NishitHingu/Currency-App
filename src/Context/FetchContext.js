@@ -39,19 +39,15 @@ const FetchContextProvider = (props) => {
     USD: "United States",
     ZAR: "South Africa",
   };
-  let symbols = Object.keys(countryTable);
-  symbols = symbols.join(",");
   const [data, setData] = useState();
 
   async function GetDataWithBase(base) {
     let result = await axios
       .get(
-        `https://api.exchangerate.host/latest?base=${
-          base ? base : "EUR"
-        }&symbols=${symbols}`
+        `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${base.toLocaleLowerCase()}.json`
       )
       .then((result) => {
-        return result.data.rates;
+        return result.data[base.toLocaleLowerCase()];
       })
       .catch((error) => {
         console.log(error);
@@ -59,17 +55,32 @@ const FetchContextProvider = (props) => {
       });
     return result;
   }
+
+  async function GetConvertionRate(base, symbol)
+  {
+    let result = await axios
+      .get(
+        `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${base.toLocaleLowerCase()}/${symbol.toLocaleLowerCase()}.json`
+      )
+      .then((result) => {
+        return Promise.resolve(result.data);
+      })
+      .catch((error) => {
+        return Promise.reject(error);
+      });
+    return result;
+  }
+
   async function GetHistoryData(base, symbol, start, end) {
     let result = await axios
       .get(
-        `https://api.exchangerate.host/timeseries?start_date=${start}&end_date=${end}&base=${base ? base : "EUR"}&symbols=${symbol}`
+        `http://api.exchangeratesapi.io/v1/timeseries?start_date=${start}&end_date=${end}&base=${base ? base : "EUR"}&symbols=${symbol}`
       )
       .then((result) => {
         console.log(result);
         return Promise.resolve(result.data.rates);
       })
       .catch((error) => {
-        console.log(error);
         return Promise.reject(error);
       });
     return result;
@@ -148,6 +159,7 @@ const FetchContextProvider = (props) => {
         countryTable,
         setData,
         GetDataWithBase,
+        GetConvertionRate,
         GetHistoryData,
         GetCryptoCurrencyData,
         FetchCryptoData,

@@ -75,11 +75,13 @@ const Home = (props) => {
         let minValue = dataArray[0][1];
         let minKey = dataArray[0][0];
         dataArray.forEach(([key, value]) => {
-          if (value > maxValue) {
-            maxValue = value;
-          } else if (minValue > value) {
-            minValue = value;
-            minKey = key;
+          if (key.toLocaleUpperCase() in countryTable){
+            if (value > maxValue) {
+              maxValue = value;
+            } else if (minValue > value) {
+              minValue = value;
+              minKey = key.toLocaleUpperCase();
+            }
           }
         });
         result = await GetDataWithBase(minKey);
@@ -100,7 +102,10 @@ const Home = (props) => {
   function getPlotData(data) {
     let plot = [];
     data.forEach(([key, value], index) => {
-      plot.push({ name: key, value: 1 / value, rank: 1 });
+      if (key.toUpperCase() in countryTable)
+      {
+        plot.push({ name: key.toUpperCase(), value: 1 / value, rank: 1 });
+      }
     });
     plot = plot.sort(compare);
     plot.forEach((data, index) => (data.rank = index + 1));
@@ -109,14 +114,15 @@ const Home = (props) => {
 
   const CustomToolTip = ({ active, payload, label }) => {
     if (active) {
-      let name = payload ? payload[0].payload.name : "";
-      let value = payload ? payload[0].payload.value : "";
-      let rank = payload ? payload[0].payload.rank : "";
+      let name = payload && payload[0] ? countryTable[payload[0].payload.name] + " (" + payload[0].payload.name + ")" : "";
+      let value = payload && payload[0] ? payload[0].payload.value : 0;
+      let rank = payload && payload[0] ? payload[0].payload.rank : "";
+      value = 1 / value;
       return (
         <div className={classes.toolTip}>
           <p>{`Rank: ${rank}`}</p>
           <p>{`Country: ${name}`}</p>
-          <p>{`Value: ${value} `}</p>
+          <p>{`Forex rate: ${value} `}</p>
         </div>
       );
     }

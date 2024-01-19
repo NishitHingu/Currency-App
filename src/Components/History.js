@@ -576,8 +576,8 @@ const History = (props) => {
           xs={12}
           style={{ marginTop: "3rem" }}
         >
-          <Typography component="div" variant="h4" align="center">
-            No data found
+          <Typography component="div" variant="h5" align="center">
+            Due to the unavailability of the API, unable to display graphs.
           </Typography>
         </Grid>
       )}

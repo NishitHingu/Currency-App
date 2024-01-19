@@ -6,7 +6,7 @@
 * [Recharts](https://recharts.org/en-US/)
 
 ### API used
-* [exchangerate.host](https://exchangerate.host/#/)- Country Forex data
+* [Forex API](https://github.com/fawazahmed0/currency-api)- Country Forex data
 * [CoinGecko](https://www.coingecko.com/en/api)- CryptoCurrency data
 
 
